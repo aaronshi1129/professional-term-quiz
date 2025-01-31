@@ -1,0 +1,2054 @@
+<html><head><base href="." />
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.quiz-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    padding: 30px;
+    width: 600px;
+    max-width: 95%;
+}
+
+.title {
+    text-align: center;
+    color: #2196f3;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.name-input-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.name-input {
+    padding: 10px;
+    font-size: 1.1em;
+    border: 2px solid #2196f3;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.start-btn {
+    background: #2196f3;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1em;
+    transition: background 0.3s ease;
+}
+
+.start-btn:hover {
+    background: #1976d2;
+}
+
+.quiz-sections {
+    display: none;
+}
+
+.category-select {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.category-btn {
+    padding: 15px;
+    border: 2px solid #2196f3;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1em;
+}
+
+.category-btn.active {
+    background: #2196f3;
+    color: white;
+}
+
+.mode-select {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #2196f3;
+    border-radius: 5px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-btn.active {
+    background: #2196f3;
+    color: white;
+}
+
+.question {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.options {
+    display: grid;
+    gap: 10px;
+}
+
+.option {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option:hover {
+    background: #f5f5f5;
+    transform: translateX(5px);
+}
+
+.selected {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.correct {
+    background: #c8e6c9;
+    border-color: #4caf50;
+}
+
+.incorrect {
+    background: #ffcdd2;
+    border-color: #f44336;
+}
+
+.score-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.timer {
+    background: #fff3e0;
+    padding: 8px 15px;
+    border-radius: 5px;
+    color: #e65100;
+    font-weight: bold;
+}
+
+.score {
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+    color: #666;
+}
+
+.next-btn {
+    background: #2196f3;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 1em;
+    transition: background 0.3s ease;
+}
+
+.next-btn:hover {
+    background: #1976d2;
+}
+
+.progress-bar {
+    height: 6px;
+    background: #e0e0e0;
+    margin-bottom: 20px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #2196f3;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.quiz-content {
+    display: none;
+}
+
+.author-credit {
+    text-align: center;
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 20px;
+    font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="quiz-container">
+    <h1 class="title">Professional Term Quiz</h1>
+    
+    <div class="name-input-container fade-in">
+        <input type="text" class="name-input" placeholder="Please enter your name" required>
+        <button class="start-btn">Start Quiz</button>
+    </div>
+
+    <div class="quiz-sections" style="display: none;">
+        <div class="category-select">
+            <button class="category-btn" data-category="ai">AI Literacy</button>
+            <button class="category-btn" data-category="it">General IT</button>
+            <button class="category-btn" data-category="math">Math</button>
+            <button class="category-btn" data-category="env">Environmental Education</button>
+        </div>
+
+        <div class="quiz-content">
+            <div class="mode-select">
+                <button class="mode-btn" data-mode="1">English → Chinese</button>
+                <button class="mode-btn" data-mode="2">Chinese → English</button>
+            </div>
+            <div class="score-display">
+                <div class="points">
+                    Correct: <span id="correct">0</span> / Wrong: <span id="wrong">0</span>
+                </div>
+                <div class="timer" id="timer">Total Time: 0:00</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            <div id="question" class="question"></div>
+            <div id="options" class="options"></div>
+            <button id="next" class="next-btn" style="display: none;">Next Question</button>
+            <div id="score" class="score"></div>
+        </div>
+    </div>
+    
+    <div class="author-credit">
+        Author: Aaron Shi. Released in November 2024.
+    </div>
+</div>
+
+<script>
+const vocabularyData = {
+    ai: [
+    { english: 'AAAI', chinese: '人工智慧促進會(簡稱)' },
+    { english: 'ACO', chinese: '蟻群演算法(簡稱)' },
+    { english: 'action', chinese: '行動；行為；活動' },
+    { english: 'action recognition', chinese: '行為識別' },
+    { english: 'activation', chinese: '激活; 啟動; 觸發' },
+    { english: 'adaptive', chinese: '適合的；適應的' },
+    { english: 'agent', chinese: '代理商；智能體' },
+    { english: 'AGI', chinese: '通用人工智慧(簡稱)；多元智能(簡稱)；強人工智慧的另一種稱呼' },
+    { english: 'AI', chinese: '人工智慧(簡稱)' },
+    { english: 'AIoT', chinese: '人工智慧物聯網(簡稱)' },
+    { english: 'AIY', chinese: '利用 AI 來進行的 DIY 功能套件(簡稱)' },
+    { english: 'algorithm', chinese: '演算法；互除法；規則系統' },
+    { english: 'AlphaGo', chinese: '阿爾法狗；一種下棋的 AI 軟體' },
+    { english: 'AMA', chinese: '美國醫學協會(簡稱)' },
+    { english: 'analyst', chinese: '分析師；分析者；善於分析者' },
+    { english: 'analytic', chinese: '分析的' },
+    { english: 'ANI', chinese: '專用人工智慧(簡稱)；屬於弱人工智慧的一種稱呼(簡稱)' },
+    { english: 'ANN', chinese: '人工神經網路(簡稱)' },
+    { english: 'annealing', chinese: '鍛鍊；磨鍊' },
+    { english: 'ant', chinese: '螞蟻；蟻' },
+    { english: 'AR', chinese: '擴增實境(簡稱)' },
+    { english: 'artificial', chinese: '人工的，人造的；假的' },
+    { english: 'assessment', chinese: '評價；估計' },
+    { english: 'association', chinese: '關聯；協會；公會；社團；聯盟' },
+    { english: 'assumption', chinese: '假定；設想' },
+    { english: 'ATP', chinese: '列車自動保護系統(簡稱)' },
+    { english: 'augmented', chinese: '擴增的；增加的' },
+    { english: 'automatic', chinese: '自動的' },
+    { english: 'autonomic', chinese: '自治的；自律的' },
+    { english: 'autonomous', chinese: '自主的；自治的；自治權的' },
+    { english: 'awareness', chinese: '察覺；覺悟；體認；意識' },
+    { english: 'base', chinese: '基；底；基部' },
+    { english: 'Bayesian', chinese: '貝葉斯；貝葉斯機率演算法' },
+    { english: 'bearing', chinese: '軸承' },
+    { english: 'behavior', chinese: '行為；舉止；態度' },
+    { english: 'BI', chinese: '商業智慧(簡稱)' },
+    { english: 'bias', chinese: '偏值；偏見' },
+    { english: 'big data', chinese: '大數據' },
+    { english: 'binary', chinese: '二元的；二進位的；由二部分構成的；二進位數；一雙' },
+    { english: 'blob', chinese: '一滴；水滴；小斑點' },
+    { english: 'blur', chinese: '模糊；模糊不清的事物；使模糊不清' },
+    { english: 'bottleneck', chinese: '瓶頸；障礙物；隘' },
+    { english: 'branch', chinese: '樹枝；分支；枝；支' },
+    { english: 'business intelligence', chinese: '商業智慧' },
+    { english: 'calculus', chinese: '微積分' },
+    { english: 'causal', chinese: '原因的；因果的' },
+    { english: 'CCD', chinese: '電荷耦合器件(簡稱)；感光耦合元件(簡稱)' },
+    { english: 'CDC', chinese: '疾病控制中心(簡稱)' },
+    { english: 'charge', chinese: '充電；電荷' },
+    { english: 'chatbots', chinese: '聊天機器人' },
+    { english: 'CIMS', chinese: '電腦或現代)集成製造系統(簡稱)' },
+    { english: 'class', chinese: '類；班級；階級；社會等級；等級制度；把……分類' },
+    { english: 'classification', chinese: '分類' },
+    { english: 'cleansing', chinese: '清理；淨化；洗清' },
+    { english: 'cloud', chinese: '雲；雲狀物' },
+    { english: 'clustering', chinese: '聚類' },
+    { english: 'CMOS', chinese: '互補金氧半導體(簡稱)' },
+    { english: 'CNC', chinese: '數位控制車床(簡稱)' },
+    { english: 'CNN', chinese: '卷積神經網路(簡稱)' },
+    { english: 'coding', chinese: '程式設計；編碼；識別；分辨' },
+    { english: 'cognitive', chinese: '認知的' },
+    { english: 'colony', chinese: '集群；群體；殖民地' },
+    { english: 'computational', chinese: '運算；計算的；計算機的' },
+    { english: 'computer', chinese: '電腦；電腦' },
+    { english: 'computing', chinese: '計算；運算' },
+    { english: 'condition', chinese: '情況；環境；形勢' },
+    { english: 'confidence', chinese: '信賴度' },
+    { english: 'consciousness', chinese: '意念；意識；有知覺；清醒' },
+    { english: 'contemporary', chinese: '當代的；同時代的；同時代的人；同年齡的人' },
+    { english: 'context', chinese: '背景情境；上下文；文章脈絡；來龍去脈' },
+    { english: 'control', chinese: '控制；支配；管理' },
+    { english: 'convolution', chinese: '卷積；盤繞;彎曲' },
+    { english: 'coronary', chinese: '冠心病；冠狀的；冠狀動脈的' },
+    { english: 'corpus', chinese: '語料庫；文集；全集；主體；軀體' },
+    { english: 'correlation', chinese: '相互關係；關聯' },
+    { english: 'correlationship', chinese: '相關關係' },
+    { english: 'CPU', chinese: '中央微處理機(簡稱)' },
+    { english: 'CRM', chinese: '客戶關係管理(簡稱)' },
+    { english: 'curve', chinese: '曲線' },
+    { english: 'customer', chinese: '客戶；顧客；買主' },
+    { english: 'data', chinese: '資料' },
+    { english: 'DAI', chinese: '分散式人工智慧(簡稱)' },
+    { english: 'database', chinese: '資料庫' },
+    { english: 'DBN', chinese: '深度置信網路(簡稱)' },
+    { english: 'decision', chinese: '決策；決定；決心；判斷' },
+    { english: 'deep', chinese: '深處；深的；縱深的；位於深處；深深地' },
+    { english: 'demand', chinese: '請求；需要；需求' },
+    { english: 'DENDRAL', chinese: '樹枝狀演算法；一種化學領域的專家系統；一種幫助化學家判斷某待定物質的分子結構的專家系統' },
+    { english: 'destination', chinese: '目的地；終點；目標' },
+    { english: 'diagnosis', chinese: '診斷；診斷結果；診斷書' },
+    { english: 'dialogue', chinese: '對話；交談' },
+    { english: 'digital', chinese: '數位的' },
+    { english: 'digitalize', chinese: '數位化' },
+    { english: 'distributed', chinese: '分散式的；分布式的' },
+    { english: 'distribution', chinese: '分布;分發;分配;散布;分銷' },
+    { english: 'DNC', chinese: '分散式數位控制(簡稱)' },
+    { english: 'DNN', chinese: '深度神經網路(簡稱)' },
+    { english: 'domain', chinese: '領域；領土；領地' },
+    { english: 'EBL', chinese: '基於解釋的學習(簡稱)' },
+    { english: 'EBM', chinese: '循證醫學(簡稱)；實證醫學(簡稱)；遵循證據的醫學(簡稱)' },
+    { english: 'eHealth', chinese: '智慧醫療' },
+    { english: 'EHRs', chinese: '電子健康檔案(簡稱)' },
+    { english: 'electronic', chinese: '電子的' },
+    { english: 'embedded', chinese: '植入的；嵌入的' },
+    { english: 'empirical', chinese: '經驗性的；以經驗(或觀察)為依據的' },
+    { english: 'EMRs', chinese: '電子病歷(簡稱)' },
+    { english: 'encapsulation', chinese: '封裝；概括' },
+    { english: 'energy', chinese: '能源' },
+    { english: 'engine', chinese: '引擎；發動機' },
+    { english: 'engineer', chinese: '工程師' },
+    { english: 'enriched', chinese: '使富足的；使肥沃的' },
+    { english: 'environment', chinese: '環境；四周狀況' },
+    { english: 'event', chinese: '事件' },
+    { english: 'evidence', chinese: '證據；證詞；證人；物證' },
+    { english: 'expert', chinese: '專家；能手；熟練' },
+    { english: 'expertise', chinese: '專家知識；專門知識；專門技術；專家鑒定' },
+    { english: 'explanation', chinese: '解釋；說明' },
+    { english: 'fact', chinese: '事實' },
+    { english: 'feature map', chinese: '特徵圖像' },
+    { english: 'firewall', chinese: '防火牆' },
+    { english: 'fluent', chinese: '流暢的' },
+    { english: 'frame', chinese: '框架法；構架; 車架; 框架' },
+    { english: 'function', chinese: '函數;功能；作用；官能；職務；職責' },
+    { english: 'fuzzy', chinese: '模糊不清的；有毛的' },
+    { english: 'GB', chinese: '相當於1,024MB(簡稱)；相當於百萬KB(簡稱)；十億位元組(簡稱)' },
+    { english: 'GDPR', chinese: '資料保護規則(簡稱)' },
+    { english: 'genetic', chinese: '基因的；遺傳的' },
+    { english: 'genome', chinese: '基因組' },
+    { english: 'geographic', chinese: '地理學的；地理的' },
+    { english: 'gigabyte', chinese: '相當於 1,024MB；相當於百萬KB；十億位元組' },
+    { english: 'GIS', chinese: '地理資訊系統(簡稱)' },
+    { english: 'global', chinese: '球狀的；全世界' },
+    { english: 'governance', chinese: '治理' },
+    { english: 'GPS', chinese: '全球衛星定位系統(簡稱)' },
+    { english: 'GPU', chinese: '圖形處理單元(簡稱)' },
+    { english: 'granularity', chinese: '細微性；顆粒度；間隔尺寸' },
+    { english: 'graph', chinese: '圖；標繪圖；圖表；圖解；(統計上的)曲線' },
+    { english: 'graphic', chinese: '圖解的；繪畫的' },
+    { english: 'guidance', chinese: '引導；指導；領導；輔導；諮詢' },
+    { english: 'HA', chinese: '家庭自動化(簡稱)' },
+    { english: 'health', chinese: '健康；健康狀況；衛生' },
+    { english: 'heuristic', chinese: '啟發式的；（電腦程式）探索的' },
+    { english: 'HGP', chinese: '人類基因計畫組(簡稱)' },
+    { english: 'holon', chinese: '整子；全能系統' },
+    { english: 'hyperlink', chinese: '連結；超連結' },
+    { english: 'IaaS', chinese: '基礎設施服務(簡稱)' },
+    { english: 'IM', chinese: '智慧型機器(簡稱)' },
+    { english: 'image', chinese: '影像；影像' },
+    { english: 'IMS', chinese: '智慧製造系統(簡稱)' },
+    { english: 'inference', chinese: '推理；推論；推斷' },
+    { english: 'informatics', chinese: '信息學；資訊學' },
+    { english: 'information', chinese: '信息；報告；消息；報導；情報資料' },
+    { english: 'infrastructure', chinese: '基礎設施；基礎建設' },
+    { english: 'inheritance', chinese: '繼承；繼承權' },
+    { english: 'input', chinese: '輸入' },
+    { english: 'instrumented', chinese: '感知化' },
+    { english: 'integrated', chinese: '集成的;整體的;綜合的' },
+    { english: 'integration', chinese: '整合；完成；集成' },
+    { english: 'intelligence', chinese: '智能；智慧；理解力；情報；情報工作' },
+    { english: 'intelligent', chinese: '智能化' },
+    { english: 'interaction', chinese: '交互；互動；互相影響' },
+    { english: 'interactive', chinese: '相互作用的；互動的；相互交流的' },
+    { english: 'interconnected', chinese: '互聯化' },
+    { english: 'intermediate', chinese: '中間的；居中的；中級的' },
+    { english: 'Internet', chinese: '網際網路；互聯網' },
+    { english: 'IoT', chinese: '物聯網(簡稱)' },
+    { english: 'IP', chinese: '互聯網協定(簡稱)' },
+    { english: 'IR', chinese: '資訊檢索(簡稱)' },
+    { english: 'ITS', chinese: '智慧交通(簡稱)' },
+    { english: 'KNN', chinese: 'k-最近鄰演算法(簡稱)' },
+    { english: 'knowledge', chinese: '知識；學識' },
+    { english: 'label', chinese: '貼紙；標籤；標記；符號' },
+    { english: 'language', chinese: '語言；語言文字' },
+    { english: 'leaf', chinese: '葉子；生葉片' },
+    { english: 'learning', chinese: '學習' },
+    { english: 'linear', chinese: '線的；直線的；使用線的' },
+    { english: 'linguistic', chinese: '語言的；語言學' },
+    { english: 'listening', chinese: '傾聽' },
+    { english: 'logic', chinese: '邏輯的' },
+    { english: 'machine', chinese: '機器；機械' },
+    { english: 'mail', chinese: '郵件' },
+    { english: 'management', chinese: '管理；經營；處理' },
+    { english: 'manufacture', chinese: '(大量)製造;製造業；加工' },
+    { english: 'MAS', chinese: '多智慧體系統(簡稱)；多代理系統(簡稱)' },
+    { english: 'mathematics', chinese: '數學；數學運算' },
+    { english: 'medical', chinese: '醫學的；醫術的；醫療的' },
+    { english: 'Medline', chinese: '一個醫療知識網站' },
+    { english: 'memory', chinese: '記憶體' },
+    { english: 'MI', chinese: '機器智慧(簡稱)' },
+    { english: 'mining', chinese: '採礦；礦業' },
+    { english: 'mobility', chinese: '移動' },
+    { english: 'modeling', chinese: '模擬；建模；造型的；立體感的' },
+    { english: 'monitor', chinese: '監督；監視器；監聽員；[電腦]顯示器' },
+    { english: 'motivated', chinese: '有動機的；有目的的；有積極性的' },
+    { english: 'multifunctional', chinese: '多功能的' },
+    { english: 'MR', chinese: '混合實境(簡稱)' },
+    { english: 'multi-layer', chinese: '多層；多層的' },
+    { english: 'narrow', chinese: '狹的；狹窄的；範圍狹小的' },
+    { english: 'natural', chinese: '自然的；天然物；自然的事情' },
+    { english: 'nature', chinese: '自然(常大寫)；自然界' },
+    { english: 'NC', chinese: '數位控制(簡稱)' },
+    { english: 'nearest', chinese: '最近的' },
+    { english: 'neighbor', chinese: '鄰居；鄰近的；鄰接的' },
+    { english: 'nerve', chinese: '神經；神經過敏；憂慮' },
+    { english: 'network', chinese: '網路；網狀物' },
+    { english: 'neural', chinese: '神經的；神經中枢的' },
+    { english: 'neuron', chinese: '神經元；神經單位；神經原(細胞)' },
+    { english: 'new', chinese: '新的' },
+    { english: 'Nike', chinese: '耐克公司' },
+    { english: 'NLP', chinese: '自然語言處理(簡稱);神經語言程式學(簡稱)' },
+    { english: 'node', chinese: '結；節；交叉點；中心點；莖節；瘤' },
+    { english: 'non-causal', chinese: '非因果' },
+    { english: 'nonlinear', chinese: '非線性的' },
+    { english: 'numerical', chinese: '數值的；數字的；以數字表示的' },
+    { english: 'object', chinese: '物件；物體；對象；目標' },
+    { english: 'OLAP', chinese: '線上分析處理(簡稱)' },
+    { english: 'omnidirectional', chinese: '全方向的；全向的' },
+    { english: 'online', chinese: '線上；連線作業的；(在)線上的' },
+    { english: 'open', chinese: '開放的；打開的；打開' },
+    { english: 'oral', chinese: '口語；口頭的；口述的；口試' },
+    { english: 'overall', chinese: '全域的；全部的；全體的' },
+    { english: 'PaaS', chinese: '研發平臺服務(簡稱)' },
+    { english: 'parse', chinese: '剖析；從語法上分析' },
+    { english: 'particle', chinese: '粒子；顆粒' },
+    { english: 'pattern', chinese: '模式；樣式；花樣；圖案' },
+    { english: 'PB', chinese: '相當於1,024TB(簡稱)；相當於百萬GB' },
+    { english: 'PCB', chinese: '印刷電路(簡稱)' },
+    { english: 'perceptible', chinese: '可感知的；可察覺的；可辨的' },
+    { english: 'petabyte', chinese: '相當於1,024TB；相當於百萬GB' },
+    { english: 'physical', chinese: '實體的；物理的；物質的' },
+    { english: 'pixel', chinese: '圖元' },
+    { english: 'platform', chinese: '平臺；台；講臺' },
+    { english: 'polymorphism', chinese: '多態性；多型現象' },
+    { english: 'positioning', chinese: '定位' },
+    { english: 'precision', chinese: '精度；準確度' },
+    { english: 'prediction', chinese: '預測' },
+    { english: 'print', chinese: '印；印刷' },
+    { english: 'probability', chinese: '概率；或然率；機率' },
+    { english: 'production', chinese: '生產；產生式；製作' },
+    { english: 'program', chinese: '程式' },
+    { english: 'programming', chinese: '程式設計；撰寫程式' },
+    { english: 'protection', chinese: '保護；防護' },
+    { english: 'pseudo', chinese: '假的；冒充的；假冒的人；偽君子' },
+    { english: 'PSO', chinese: '粒子群演算法(簡稱)' },
+    { english: 'push', chinese: '推；推動；推進' },
+    { english: 'radio', chinese: '射頻；無線電' },
+    { english: 'random', chinese: '隨機；隨機的' },
+    { english: 'real', chinese: '真的；真實的；實際的；不動(產)的；實數的' },
+    { english: 'recognize', chinese: '識別；認知' },
+    { english: 'recursive', chinese: '遞歸的；遞迴的；不斷自我重覆的' },
+    { english: 'reinforcement', chinese: '增援；加強；加固；強化' },
+    { english: 'relationship', chinese: '關係；關聯；人際關係；聯系' },
+    { english: 'reliability', chinese: '可靠性' },
+    { english: 'remediation', chinese: '補救；矯正' },
+    { english: 'remote', chinese: '相隔很遠的；遙遠的' },
+    { english: 'representation', chinese: '表示；表述；代表；表現；代理；代表權' },
+    { english: 'resource', chinese: '資源；物力；對策' },
+    { english: 'retailing', chinese: '零售；零售業' },
+    { english: 'retrieval', chinese: '檢索；取回' },
+    { english: 'RFID', chinese: '射頻識別(簡稱)；無線射頻辨識(簡稱)' },
+    { english: 'RNN', chinese: '遞歸神經網路(簡稱)' },
+    { english: 'robot', chinese: '機器人' },
+    { english: 'robotics', chinese: '機器人學' },
+    { english: 'root', chinese: '根；地下莖；根菜類；使生根' },
+    { english: 'rote', chinese: '機械的作法；死記硬背；生搬硬套' },
+    { english: 'RS', chinese: '遙感(簡稱)' },
+    { english: 'rule', chinese: '規則' },
+    { english: 'SA', chinese: '模擬退火演算法(簡稱)' },
+    { english: 'SaaS', chinese: '應用軟體服務(簡稱)' },
+    { english: 'safety', chinese: '安全' },
+    { english: 'sampling', chinese: '採樣' },
+    { english: 'scenario', chinese: '場景；情節；劇本；事態；局面' },
+    { english: 'scientist', chinese: '科學家；自然科學家' },
+    { english: 'seamless', chinese: '無縫的；無縫合線的' },
+    { english: 'security', chinese: '安全；保安；防備；安全感' },
+    { english: 'self-directed', chinese: '自主式' },
+    { english: 'semantic', chinese: '語義的；語義學的' },
+    { english: 'semi-structured', chinese: '半結構化' },
+    { english: 'sensor', chinese: '感應器；傳感器' },
+    { english: 'service', chinese: '服務' },
+    { english: 'session', chinese: '對話；開會；會議' },
+    { english: 'sharing', chinese: '共用；分享' },
+    { english: 'shell', chinese: '殼；果' },
+    { english: 'shopping', chinese: '買東西；購物' },
+    { english: 'signal', chinese: '信號；暗號' },
+    { english: 'simulated', chinese: '模擬的' },
+    { english: 'skill', chinese: '(專門)技術；技能；技藝' },
+    { english: 'slot', chinese: '槽' },
+    { english: 'smart', chinese: '聰明的；智慧的' },
+    { english: 'SMT', chinese: '表面貼裝技術(簡稱)' },
+    { english: 'software', chinese: '軟體' },
+    { english: 'sound', chinese: '聲音' },
+    { english: 'specialist', chinese: '專家' },
+    { english: 'speech', chinese: '語音；說話；說話能力；言詞' },
+    { english: 'SR', chinese: '替代實境(簡稱)' },
+    { english: 'statistical', chinese: '統計的；統計學的' },
+    { english: 'statistics', chinese: '統計學；統計；統計資料' },
+    { english: 'stream', chinese: '串流' },
+    { english: 'strong', chinese: '強壯的；強健的；強大的' },
+    { english: 'structure', chinese: '結構；構造；組織；構造體；建築物' },
+    { english: 'substitutional', chinese: '替代的；代用的' },
+    { english: 'supervise', chinese: '監督；管理；指導' },
+    { english: 'surface', chinese: '表面；表面的；外觀的' },
+    { english: 'sustainability', chinese: '永續' },
+    { english: 'swarm', chinese: '群；蜂群；(密集的)一大群' },
+    { english: 'swarm behavior', chinese: '群體行為；群体行動' },
+    { english: 'syntax', chinese: '語法；句法' },
+    { english: 'system', chinese: '系統' },
+    { english: 'TB', chinese: '等於1,000GB(簡稱)；萬億位元組(簡稱)；太位元組' },
+    { english: 'TCP', chinese: '傳輸控制協議(簡稱)' },
+    { english: 'technology', chinese: '科技；技術；工業技術；科學技術' },
+    { english: 'tensor', chinese: '張量；張肌' },
+    { english: 'TensorFlow', chinese: '深度學習開源框架' },
+    { english: 'terabyte', chinese: '等於1,000GB；萬億位元組；太位元組' },
+    { english: 'test data', chinese: '測試數據' },
+    { english: 'thinking', chinese: '思維；思想；思考；意見；想法' },
+    { english: 'threshold', chinese: '門檻；閾值；起點' },
+    { english: 'train', chinese: '列車；火車；訓練；培養' },
+    { english: 'training', chinese: '訓練；培養' },
+    { english: 'transducer', chinese: '感測器；傳感器；變頻器變換器；換能器' },
+    { english: 'transformation', chinese: '轉換；變換' },
+    { english: 'transition', chinese: '轉移；變遷；轉變' },
+    { english: 'translation', chinese: '翻譯；譯文' },
+    { english: 'transmission', chinese: '傳輸；傳送；傳達' },
+    { english: 'transport', chinese: '運送；運輸；搬運' },
+    { english: 'transportation', chinese: '交通；運輸；輸送；運輸工具' },
+    { english: 'trunk', chinese: '樹幹；大皮箱' },
+    { english: 'trust', chinese: '信任' },
+    { english: 'Turing', chinese: '圖靈(人名)' },
+    { english: 'ubiquitous', chinese: '無所不在的；到處存在的；普遍存在的' },
+    { english: 'uncertain', chinese: '不明確的；含糊的；不確定的' },
+    { english: 'unstructured', chinese: '非結構化；無特定結構的；無系統性的；鬆散的' },
+    { english: 'unsupervised', chinese: '無監督的；無人監督的' },
+    { english: 'user', chinese: '使用者' },
+    { english: 'value', chinese: '價值；估價；評價' },
+    { english: 'variance', chinese: '變數；變化；變動；變異' },
+    { english: 'variety', chinese: '種類；多樣化；變化；表示多樣的資料類型' },
+    { english: 'velocity', chinese: '迅速；快速；速度' },
+    { english: 'veracity', chinese: '真實性；真實；誠實' },
+    { english: 'virtual', chinese: '虛擬的' },
+    { english: 'virtualization', chinese: '虛擬化' },
+    { english: 'vision', chinese: '視力；視覺' },
+    { english: 'visualization', chinese: '形象；形象化；想像' },
+    { english: 'voice', chinese: '語音；聲音；說話聲' },
+    { english: 'volume', chinese: '容積；體積；卷；表示海量的資料規模' },
+    { english: 'VR', chinese: '虛擬實境(簡稱)；虛擬實境技術(簡稱)' },
+    { english: 'weak', chinese: '弱的；虛弱的；衰弱的' },
+    { english: 'web', chinese: '蜘蛛網；網狀物；網' },
+    { english: 'WHO', chinese: '世界衛生組織(簡稱)' }
+    ],
+    it: [
+    { english: 'access', chinese: '存取(資料)；出入口' },
+    { english: 'accessibility', chinese: '接取權；可接取性；可存取性；取用權' },
+    { english: 'account', chinese: '帳號；帳戶；帳目；會計科目' },
+    { english: 'adder', chinese: '加法器' },
+    { english: 'addiction', chinese: '成癮；上癮；沉溺；沉迷' },
+    { english: 'address', chinese: '位址' },
+    { english: 'AI', chinese: '人工智慧(縮寫)' },
+    { english: 'algorithm', chinese: '演算法' },
+    { english: 'analog', chinese: '類比' },
+    { english: 'AND', chinese: '及' },
+    { english: 'Apache', chinese: 'Apache伺服器' },
+    { english: 'APPLE II', chinese: 'APPLE II電腦' },
+    { english: 'ARPAnet', chinese: 'ARPAnet網路' },
+    { english: 'array', chinese: '陣列' },
+    { english: 'artificial intelligence', chinese: '人工智慧' },
+    { english: 'assembler', chinese: '組合程式；組譯器' },
+    { english: 'attacker', chinese: '攻擊者' },
+    { english: 'availability', chinese: '可用性' },
+    { english: 'backbone', chinese: '骨幹；基幹' },
+    { english: 'background', chinese: '背景' },
+    { english: 'backtracking', chinese: '回溯（法）' },
+    { english: 'bandwidth', chinese: '頻寬' },
+    { english: 'barcode', chinese: '條碼' },
+    { english: 'base', chinese: '基；庫；基數；基底' },
+    { english: 'battery', chinese: '電瓶；蓄電池' },
+    { english: 'bitmap', chinese: '點陣圖；位元映像' },
+    { english: 'blackboard', chinese: '黑板' },
+    { english: 'Blog', chinese: '部落格、網誌、博客' },
+    { english: 'book', chinese: '書；書籍' },
+    { english: 'bookmark', chinese: '書籤' },
+    { english: 'Boolean', chinese: '布林；布耳的' },
+    { english: 'Botnet', chinese: '殭屍網路' },
+    { english: 'bottom', chinese: '底端' },
+    { english: 'branch', chinese: '分支' },
+    { english: 'bridge', chinese: '橋接器' },
+    { english: 'brightness', chinese: '亮度' },
+    { english: 'browser', chinese: '瀏覽器' },
+    { english: 'buffer', chinese: '緩衝器' },
+    { english: 'bug', chinese: '錯誤' },
+    { english: 'byte', chinese: '位元組；拜' },
+    { english: 'cache', chinese: '快取；快取(記憶體)' },
+    { english: 'calendar', chinese: '日曆；陽曆' },
+    { english: 'chair', chinese: '椅子；(會議的)主席' },
+    { english: 'chalk', chinese: '粉筆' },
+    { english: 'Character', chinese: '字符；字元' },
+    { english: 'charger', chinese: '充電器' },
+    { english: 'charset', chinese: '字元集' },
+    { english: 'chat', chinese: '網路連結聊天' },
+    { english: 'child', chinese: '子節點' },
+    { english: 'chip', chinese: '晶片' },
+    { english: 'chipset', chinese: '晶片組' },
+    { english: 'ciphertext', chinese: '密文' },
+    { english: 'client', chinese: '用戶端' },
+    { english: 'clock', chinese: '時脈' },
+    { english: 'cluster', chinese: '叢集；群集' },
+    { english: 'coding', chinese: '編碼' },
+    { english: 'collision', chinese: '碰撞' },
+    { english: 'command', chinese: '指令' },
+    { english: 'compass', chinese: '羅盤；指南針；圓規' },
+    { english: 'compiler', chinese: '編譯程式；編譯器' },
+    { english: 'complement', chinese: '補數' },
+    { english: 'computation', chinese: '運算' },
+    { english: 'computer', chinese: '電腦；計算機' },
+    { english: 'computer system', chinese: '電腦系統' },
+    { english: 'connection', chinese: '連接' },
+    { english: 'contrast', chinese: '對比' },
+    { english: 'cookie', chinese: '訊錄；網路餅乾' },
+    { english: 'core', chinese: '核心' },
+    { english: 'cracker', chinese: '劊客' },
+    { english: 'crayon', chinese: '蠟筆' },
+    { english: 'currency', chinese: '貨幣；流通' },
+    { english: 'cyan', chinese: '青色；（印刷）四原色之一' },
+    { english: 'magenta', chinese: '洋紅色；（印刷）四原色之一' },
+    { english: 'yellow', chinese: '黃；（印刷）四原色之一' },
+    { english: 'black', chinese: '黑色；（印刷）四原色之一' },
+    { english: 'cylinder', chinese: '磁柱；圓柱' },
+    { english: 'data', chinese: '資料' },
+    { english: 'database', chinese: '資料庫' },
+    { english: 'debug', chinese: '除錯' },
+    { english: 'decimal', chinese: '十進位' },
+    { english: 'decode', chinese: '解碼' },
+    { english: 'decoder', chinese: '解碼器' },
+    { english: 'definiteness', chinese: '明確性' },
+    { english: 'delay', chinese: '延遲' },
+    { english: 'desk', chinese: '桌子；小桌子' },
+    { english: 'desktop', chinese: '桌面' },
+    { english: 'dictionary', chinese: '字典' },
+    { english: 'digital', chinese: '數位的；數位' },
+    { english: 'digitize', chinese: '數位化' },
+    { english: 'directory', chinese: '目錄' },
+    { english: 'display', chinese: '顯示器；顯示' },
+    { english: 'distributions', chinese: '發行套件' },
+    { english: 'easel', chinese: '畫架' },
+    { english: 'encyclopedia', chinese: '百科全書' },
+    { english: 'eraser', chinese: '橡皮擦；黑板擦；板擦' },
+    { english: 'Exabyte', chinese: '艾位元組' },
+    { english: 'execute', chinese: '執行' },
+    { english: 'extranet', chinese: '商際網路；企業間網路' },
+    { english: 'fetch', chinese: '擷取' },
+    { english: 'fiber', chinese: '纖維；纖維物質；纖維質料' },
+    { english: 'file', chinese: '文檔；檔案' },
+    { english: 'finiteness', chinese: '有限性' },
+    { english: 'firewall', chinese: '防火牆' },
+    { english: 'firewire', chinese: '火線' },
+    { english: 'firmware', chinese: '韌體' },
+    { english: 'folder', chinese: '資料夾' },
+    { english: 'format', chinese: '格式；製作格式' },
+    { english: 'formatting', chinese: '格式化' },
+    { english: 'frame', chinese: '框；資訊框' },
+    { english: 'freeware', chinese: '免費軟體' },
+    { english: 'front', chinese: '前端' },
+    { english: 'gamepad', chinese: '遊戲台' },
+    { english: 'gateway', chinese: '閘道器' },
+    { english: 'gigabit', chinese: '吉位元；十億位元' },
+    { english: 'gigahertz', chinese: '吉赫；十萬萬赫' },
+    { english: 'gigabyte', chinese: '吉位元組；十億位元組' },
+    { english: 'globe', chinese: '地球；地球儀' },
+    { english: 'hardware', chinese: '硬體' },
+    { english: 'http', chinese: '超文字傳輸協定' },
+    { english: 'https', chinese: '安全超文字傳輸協定' },
+    { english: 'hub', chinese: '集線器' },
+    { english: 'integer', chinese: '整數' },
+    { english: 'integrity', chinese: '完整性' },
+    { english: 'Internet', chinese: '互聯網；網際網路' },
+    { english: 'InterNIC', chinese: '美國網際網路資訊中心；網際網路域名管理中心' },
+    { english: 'interpreter', chinese: '直譯器；解譯器' },
+    { english: 'interrupt', chinese: '中斷；岔斷' },
+    { english: 'Intranet', chinese: '（企業）內部網路' },
+    { english: 'intrusion', chinese: '侵入' },
+    { english: 'iOS', chinese: '（蘋果）行動設備作業系統' },
+    { english: 'IoT', chinese: '物聯網' },
+    { english: 'iPad', chinese: '一種掌上平板電腦' },
+    { english: 'kernel', chinese: '核心' },
+    { english: 'key', chinese: '鍵；鑰；關鍵' },
+    { english: 'keyboard', chinese: '鍵盤' },
+    { english: 'keylogger', chinese: '鍵盤側錄程式' },
+    { english: 'kilobyte', chinese: '千位元組(單位)' },
+    { english: 'laptop', chinese: '膝上型電腦(簡稱)；筆記型電腦(簡稱)' },
+    { english: 'lens', chinese: '透鏡' },
+    { english: 'light', chinese: '燈；光線' },
+    { english: 'Line', chinese: '一種通訊軟體' },
+    { english: 'Linux', chinese: 'Linux 作業系統' },
+    { english: 'login', chinese: '登入' },
+    { english: 'logout', chinese: '註銷；登出' },
+    { english: 'look at', chinese: '看；注意看' },
+    { english: 'loop', chinese: '迴路；環；循環；環路' },
+    { english: 'machine learning', chinese: '機器學習' },
+    { english: 'magnet', chinese: '磁鐵' },
+    { english: 'mail', chinese: '郵件' },
+    { english: 'mainframe', chinese: '主機；大型電腦' },
+    { english: 'malware', chinese: '惡意程式' },
+    { english: 'mantissa', chinese: '（對數的）假數；尾數；定值部；係數' },
+    { english: 'marker', chinese: '馬克筆；做記號的工具' },
+    { english: 'mask', chinese: '遮罩；遮蔽' },
+    { english: 'Mbps', chinese: '每秒百萬位元' },
+    { english: 'megabyte', chinese: '百萬位元組(單位)' },
+    { english: 'memory', chinese: '記憶體' },
+    { english: 'microcomputer', chinese: '微電腦；微算機；微（型）計算機' },
+    { english: 'microcontroller', chinese: '微控器' },
+    { english: 'microphone', chinese: '麥克風；話筒；微音器；擴音器' },
+    { english: 'microprocessor', chinese: '微處理器；微處理機' },
+    { english: 'Microsoft', chinese: '微軟；微軟公司' },
+    { english: 'microwave', chinese: '微波' },
+    { english: 'mnemonics', chinese: '輔助記憶碼；助憶符；記憶術' },
+    { english: 'modem', chinese: '數據機' },
+    { english: 'module', chinese: '模組；程序塊' },
+    { english: 'monitor', chinese: '監視器；監聽員；顯示器；監視程式；監督' },
+    { english: 'motherboard', chinese: '主機板；母板' },
+    { english: 'mouse', chinese: '滑鼠；游標控制器；鼠標器' },
+    { english: 'MPEG-4', chinese: '動態圖像第 4 代(簡稱)' },
+    { english: 'multimedia', chinese: '多媒體' },
+    { english: 'multi-touch', chinese: '多點觸控' },
+    { english: 'nanometer', chinese: '奈米' },
+    { english: 'nanosecond', chinese: '奈秒' },
+    { english: 'netbook', chinese: '隨身型易網機；輕省筆電' },
+    { english: 'nettop', chinese: '桌上型易網機' },
+    { english: 'network', chinese: '網路' },
+    { english: 'node', chinese: '節點' },
+    { english: 'noncommercial', chinese: '非商業性' },
+    { english: 'NOT', chinese: '非；反(邏輯)' },
+    { english: 'notebook', chinese: '筆記本；筆記型電腦(簡稱)' },
+    { english: 'online', chinese: '線上；連線作業的；(在)線上的' },
+    { english: 'opcode', chinese: '運算碼；作業碼' },
+    { english: 'operand', chinese: '運算元' },
+    { english: 'OR', chinese: '或(邏輯)' },
+    { english: 'output', chinese: '輸出' },
+    { english: 'packet', chinese: '分封；封包' },
+    { english: 'pad', chinese: '平板' },
+    { english: 'paging', chinese: '分頁' },
+    { english: 'paper', chinese: '紙張；報紙' },
+    { english: 'parent', chinese: '上代；父；母；親節點' },
+    { english: 'partition', chinese: '分區；分割；區間；劃分' },
+    { english: 'Pascal', chinese: '巴斯卡語言' },
+    { english: 'Pascaline', chinese: 'Pascaline 計算機' },
+    { english: 'password', chinese: '密碼' },
+    { english: 'pen', chinese: '筆；鋼筆' },
+    { english: 'pencil', chinese: '鉛筆' },
+    { english: 'per minute', chinese: '每分鐘' },
+    { english: 'per second', chinese: '每秒鐘' },
+    { english: 'peripheral', chinese: '周邊設備；周圍的' },
+    { english: 'petabyte', chinese: '拍位元組；千兆位元組' },
+    { english: 'phishing', chinese: '網路釣魚' },
+    { english: 'picture', chinese: '畫；畫像；圖片；照片' },
+    { english: 'pixel', chinese: '像素' },
+    { english: 'plaintext', chinese: '明文' },
+    { english: 'plasma', chinese: '電漿' },
+    { english: 'platter', chinese: '磁盤' },
+    { english: 'plug in', chinese: '插上...的插頭以接通電源' },
+    { english: 'polling', chinese: '輪詢' },
+    { english: 'polymorphic', chinese: '多形的' },
+    { english: 'pop', chinese: '彈出' },
+    { english: 'port', chinese: '通訊埠；連接埠' },
+    { english: 'poster', chinese: '海報；招貼；布告；驛馬' },
+    { english: 'printer', chinese: '印表機' },
+    { english: 'privacy', chinese: '隱私' },
+    { english: 'process', chinese: '行程；程序' },
+    { english: 'program', chinese: '程式' },
+    { english: 'programming', chinese: '程式設計' },
+    { english: 'projector', chinese: '投影機' },
+    { english: 'protection', chinese: '保護' },
+    { english: 'protocol', chinese: '協定；協議' },
+    { english: 'push', chinese: '推入' },
+    { english: 'quantization', chinese: '量化' },
+    { english: 'quantize', chinese: '量化' },
+    { english: 'queue', chinese: '佇列' },
+    { english: 'radio', chinese: '收音機；無線電' },
+    { english: 'rear', chinese: '末端' },
+    { english: 'register', chinese: '暫存器' },
+    { english: 'relevance', chinese: '關聯性' },
+    { english: 'repeater', chinese: '中繼器' },
+    { english: 'resolution', chinese: '解析度' },
+    { english: 'roadmap', chinese: '地圖；路徑圖' },
+    { english: 'robot', chinese: '機器人' },
+    { english: 'root', chinese: '根' },
+    { english: 'router', chinese: '路由器' },
+    { english: 'routing', chinese: '路由' },
+    { english: 'sample', chinese: '取樣；樣本' },
+    { english: 'sampling', chinese: '取樣；抽樣' },
+    { english: 'save', chinese: '儲存' },
+    { english: 'scanner', chinese: '掃描器' },
+    { english: 'schedule', chinese: '時間表；課程表' },
+    { english: 'Scratch', chinese: '一種圖形化程式設計器；Scratch 程式' },
+    { english: 'screen', chinese: '投影幕；屏幕' },
+    { english: 'script', chinese: '腳本' },
+    { english: 'sector', chinese: '磁區' },
+    { english: 'selection', chinese: '選擇' },
+    { english: 'seminar', chinese: '研究班；研習會；研討會' },
+    { english: 'sensor', chinese: '感應器' },
+    { english: 'sequence', chinese: '循序' },
+    { english: 'server', chinese: '伺服器' },
+    { english: 'shareware', chinese: '共享軟體；共用軟體' },
+    { english: 'shell', chinese: '殼；外殼' },
+    { english: 'Skype', chinese: '一種通訊軟體；一種通訊軟體可呼叫手機或座機' },
+    { english: 'sniffer', chinese: '竊聽者' },
+    { english: 'software', chinese: '軟體' },
+    { english: 'sound', chinese: '聲音' },
+    { english: 'spam', chinese: '垃圾郵件' },
+    { english: 'speaker', chinese: '喇叭；揚聲器；擴音機' },
+    { english: 'speed', chinese: '速度' },
+    { english: 'spyware', chinese: '間諜軟體' },
+    { english: 'stack', chinese: '堆疊' },
+    { english: 'stationery', chinese: '文具；信紙' },
+    { english: 'subnet', chinese: '子網路' },
+    { english: 'switch', chinese: '交換器；開關；交換' },
+    { english: 'system', chinese: '系統' },
+    { english: 'table', chinese: '桌子；長桌；圓桌' },
+    { english: 'tablet', chinese: '平板電腦(簡稱)；藥片；小片；寫板；碑' },
+    { english: 'tags', chinese: '標記' },
+    { english: 'tail', chinese: '尾端；尾' },
+    { english: 'taskbar', chinese: '工作列' },
+    { english: 'telemedicine', chinese: '遠距醫療' },
+    { english: 'television', chinese: '電視機；電視節目；電視行業' },
+    { english: 'telnet', chinese: '遠端登入協定' },
+    { english: 'terabyte', chinese: '兆位元組' },
+    { english: 'terminal', chinese: '終端機' },
+    { english: 'terminator', chinese: '終接器' },
+    { english: 'text', chinese: '文字；正文；本文' },
+    { english: 'threads', chinese: '執行緒' },
+    { english: 'top', chinese: '頂端；頂' },
+    { english: 'track', chinese: '磁軌' },
+    { english: 'tree', chinese: '樹狀；樹狀結構' },
+    { english: 'Trojan', chinese: '木馬程式' },
+    { english: 'Turing', chinese: '杜林；圖靈' },
+    { english: 'turn down', chinese: '關小；調低' },
+    { english: 'turn off', chinese: '關掉' },
+    { english: 'turn on', chinese: '打開；發動' },
+    { english: 'turn up', chinese: '開大；上升' },
+    { english: 'Unicode', chinese: '萬國碼' },
+    { english: 'UNIX', chinese: 'UNIX 作業系統' },
+    { english: 'Unix-like', chinese: '類 Unix 的作業系統' },
+    { english: 'upload', chinese: '上傳；上載' },
+    { english: 'URL', chinese: '統一格式資源定位' },
+    { english: 'user', chinese: '用戶；使用者' },
+    { english: 'user account', chinese: '使用者帳號' },
+    { english: 'user friendly', chinese: '使用者親和性；用戶滿意介面' },
+    { english: 'user interface', chinese: '使用者介面；用戶介面' },
+    { english: 'user password', chinese: '使用者密碼' },
+    { english: 'variable', chinese: '變數' },
+    { english: 'vector', chinese: '向量' },
+    { english: 'video', chinese: '錄像；視頻；錄影' },
+    { english: 'virus', chinese: '病毒；電腦病毒' },
+    { english: 'wafer', chinese: '晶圓' },
+    { english: 'web', chinese: '網絡' },
+    { english: 'web page', chinese: '網頁' },
+    { english: 'webinar', chinese: '網路研討會(議)；網路研習會' },
+    { english: 'website', chinese: '網站' },
+    { english: 'WeChat', chinese: '微信---一種通訊軟' },
+    { english: 'weight', chinese: '權重；權數；重量；加權；砝碼；權（衡）' },
+    { english: 'whiteboard', chinese: '白板' },
+    { english: 'Wiki', chinese: '維基；共筆（一種可在網路上開放多人協同創作的超文本系統）' },
+    { english: 'Wikipedia', chinese: '維基百科全書；維基百科' },
+    { english: 'window', chinese: '視窗' },
+    { english: 'wireless', chinese: '無線；無線的；無線電的' },
+    { english: 'word', chinese: '字組' },
+    { english: 'workgroups', chinese: '工作群組' },
+    { english: 'workstation', chinese: '工作站' },
+    { english: 'worm', chinese: '網路蠕蟲；電腦蠕蟲' },
+    { english: 'www', chinese: '全球資訊網路(簡稱)' },
+    { english: 'Youku', chinese: '優酷影片網；一個影片網站(中國)' },
+    { english: 'YouTube', chinese: '一個影片網站(美國)' },
+    { english: 'zettabyte', chinese: '皆位元組(單位)' }
+    ],
+    math: [
+    { english: 'dematerialization', chinese: '非物質化' },
+    { english: 'azimuth', chinese: '方位' },
+    { english: 'Three squared is nine.', chinese: '三的平方是九。' },
+    { english: 'abscissa', chinese: '橫座標' },
+    { english: 'absolute maximum', chinese: '絕對最大值；絕對極大值' },
+    { english: 'acceleration', chinese: '加速度' },
+    { english: 'acute', chinese: '尖銳的；敏銳的；劇烈的；激烈的' },
+    { english: 'addend', chinese: '加數' },
+    { english: 'addition', chinese: '加法' },
+    { english: 'cubic', chinese: '三次的' },
+    { english: 'adjacent', chinese: '相鄰的；毗連的；鄰接的；前後相接的' },
+    { english: 'algebra', chinese: '代數學；代數' },
+    { english: 'algorithm', chinese: '演算法；算則' },
+    { english: 'amplitude', chinese: '幅度；輻角' },
+    { english: 'analytic', chinese: '解析的；分析的；分解的；善於分析的；分析型的' },
+    { english: 'analytic geometry', chinese: '解析幾何；解析幾何學' },
+    { english: 'angle', chinese: '角；角度；角落；使成角度移動；釣魚' },
+    { english: 'angular', chinese: '角的；有角的；有尖角的；用角度測量的' },
+    { english: 'antilogarithm', chinese: '真數；反對數' },
+    { english: 'approximate', chinese: '近似的' },
+    { english: 'argument', chinese: '輻角；自變數；論證' },
+    { english: 'arithmetic', chinese: '算術；計算；算術的' },
+    { english: 'median', chinese: '中位數；中線；第二四分位數' },
+    { english: 'middle point', chinese: '中點' },
+    { english: 'mid-point', chinese: '中點' },
+    { english: 'axiom', chinese: '公理；公設' },
+    { english: 'axis', chinese: '軸' },
+    { english: 'base', chinese: '底；基；基數；基底' },
+    { english: 'base number', chinese: '底數' },
+    { english: 'binomial', chinese: '二項式' },
+    { english: 'bisector', chinese: '平分線；分角線；平分面；二等分物；二等分線' },
+    { english: 'capacity', chinese: '容量' },
+    { english: 'census', chinese: '普查' },
+    { english: 'center', chinese: '中心' },
+    { english: 'center of a circle', chinese: '圓心' },
+    { english: 'center of sphere', chinese: '球心' },
+    { english: 'centimeter', chinese: '公分' },
+    { english: 'characteristic', chinese: '特徵的；特性的；示性的；特徵數；示性數' },
+    { english: 'chord', chinese: '弦' },
+    { english: 'circle', chinese: '圓' },
+    { english: 'circumradius', chinese: '外接圓半徑' },
+    { english: 'classical', chinese: '古典的' },
+    { english: 'codomain', chinese: '對應域' },
+    { english: 'coefficient', chinese: '係數' },
+    { english: 'cofactor', chinese: '餘因子' },
+    { english: 'coincidence', chinese: '重合' },
+    { english: 'column', chinese: '行' },
+    { english: 'combination', chinese: '組合；配合' },
+    { english: 'common multiple', chinese: '公倍；公倍數' },
+    { english: 'complement', chinese: '餘；補；補碼；補數；餘補' },
+    { english: 'component', chinese: '分量；連通支；成分；(機器、設備等的)構成要素；零件；組成的；構成的' },
+    { english: 'concavity', chinese: '凹性' },
+    { english: 'cone', chinese: '錐；錐面' },
+    { english: 'confidence interval', chinese: '信賴區間' },
+    { english: 'confidence level', chinese: '信心水準' },
+    { english: 'congruence', chinese: '同餘；疊合；全等；線匯' },
+    { english: 'constant function', chinese: '常數函數' },
+    { english: 'constant term', chinese: '常數項' },
+    { english: 'convergence', chinese: '收斂' },
+    { english: 'coordinate', chinese: '座標' },
+    { english: 'coprime', chinese: '互質' },
+    { english: 'correlation coefficient', chinese: '相關係數' },
+    { english: 'cosecant', chinese: '餘割' },
+    { english: 'cosine', chinese: '餘弦' },
+    { english: 'cotangent', chinese: '餘切' },
+    { english: 'counterclockwise', chinese: '逆時針的' },
+    { english: 'cross product', chinese: '叉積；向量積；外積' },
+    { english: 'cuboid', chinese: '長方體' },
+    { english: 'cylinder', chinese: '柱；柱面' },
+    { english: 'data', chinese: '資料；數據' },
+    { english: 'De Morgan law', chinese: '笛摩根法則' },
+    { english: 'decimal', chinese: '小數；十進制小數' },
+    { english: 'degree', chinese: '次；次數；度；數度' },
+    { english: 'denominator', chinese: '分母' },
+    { english: 'denseness', chinese: '稠密性' },
+    { english: 'density', chinese: '密度；稠密性' },
+    { english: 'depression', chinese: '沮喪；意氣消沉；不景氣；蕭條期' },
+    { english: 'derivative', chinese: '導數' },
+    { english: 'descending power', chinese: '降冪' },
+    { english: 'determinant', chinese: '行列式' },
+    { english: 'deviation', chinese: '偏差' },
+    { english: 'diameter', chinese: '直徑' },
+    { english: 'difference', chinese: '差；差分' },
+    { english: 'differentiable', chinese: '可微分的；可微的' },
+    { english: 'digit', chinese: '數字' },
+    { english: 'direction', chinese: '方向' },
+    { english: 'directrix', chinese: '準線' },
+    { english: 'discriminant', chinese: '判別式' },
+    { english: 'displacement', chinese: '位移' },
+    { english: 'divergence', chinese: '發散；發散性；散度；發散量' },
+    { english: 'dividend', chinese: '被除數；被除式' },
+    { english: 'division', chinese: '除；除法' },
+    { english: 'divisor', chinese: '因子；因式；因數；除數' },
+    { english: 'domain', chinese: '域；區域；定義域' },
+    { english: 'edge', chinese: '稜；邊' },
+    { english: 'element', chinese: '元素' },
+    { english: 'elevation', chinese: '仰角；高度；海拔；高地；高處' },
+    { english: 'ellipse', chinese: '橢圓' },
+    { english: 'empty set', chinese: '空集' },
+    { english: 'equation', chinese: '方程；方程式' },
+    { english: 'equator', chinese: '赤道' },
+    { english: 'even number', chinese: '偶數' },
+    { english: 'event', chinese: '事件' },
+    { english: 'exclusive', chinese: '互斥的；互斥' },
+    { english: 'experiment', chinese: '試驗；實驗' },
+    { english: 'exponent', chinese: '指數；指標' },
+    { english: 'exterior', chinese: '外部；外部的' },
+    { english: 'factor', chinese: '因數；因式；因子；因素；商' },
+    { english: 'factorial', chinese: '階乘；析因' },
+    { english: 'factorization', chinese: '因子分解；因式分解' },
+    { english: 'focus', chinese: '焦點' },
+    { english: 'fraction', chinese: '分數；分式' },
+    { english: 'frequency distribution', chinese: '次數分配；頻率分布；頻率分配' },
+    { english: 'function', chinese: '函數；操作' },
+    { english: 'geometry', chinese: '幾何；幾何學' },
+    { english: 'gram', chinese: '公克' },
+    { english: 'greater than', chinese: '大於' },
+    { english: 'half line', chinese: '半線；半直線；射線' },
+    { english: 'hyperbola', chinese: '雙曲線' },
+    { english: 'hypotenuse', chinese: '斜邊' },
+    { english: 'image', chinese: '像點；像；鏡像' },
+    { english: 'imaginary number', chinese: '虛數' },
+    { english: 'incenter', chinese: '內心' },
+    { english: 'inclination', chinese: '傾斜度；傾向；意向；趨向' },
+    { english: 'increasing', chinese: '遞增' },
+    { english: 'independent', chinese: '獨立' },
+    { english: 'indeterminate', chinese: '不確定；未定元' },
+    { english: 'inequality', chinese: '不等式' },
+    { english: 'infinity', chinese: '無窮' },
+    { english: 'inflection', chinese: '彎曲；向內彎曲；變音；轉調' },
+    { english: 'initial point', chinese: '起始點' },
+    { english: 'inner product', chinese: '內積' },
+    { english: 'inradius', chinese: '內切圓半徑' },
+    { english: 'integer', chinese: '整數' },
+    { english: 'integrand', chinese: '被積分函數；被積分式' },
+    { english: 'intercept', chinese: '截距' },
+    { english: 'interior', chinese: '內部' },
+    { english: 'interpolation', chinese: '插值；內插；插值法；內插法' },
+    { english: 'intersection', chinese: '相交；交集' },
+    { english: 'interval', chinese: '區間' },
+    { english: 'inverse matrix', chinese: '逆方陣；反矩陣' },
+    { english: 'kilogram', chinese: '公斤' },
+    { english: 'latitude', chinese: '緯度' },
+    { english: 'length', chinese: '長度' },
+    { english: 'limit', chinese: '極限' },
+    { english: 'line', chinese: '線；直線' },
+    { english: 'liter', chinese: '公升' },
+    { english: 'logarithm', chinese: '對數' },
+    { english: 'logic', chinese: '理則學；邏輯[學]' },
+    { english: 'longitude', chinese: '經度' },
+    { english: 'lower limit', chinese: '下極限' },
+    { english: 'lower sum', chinese: '下和' },
+    { english: 'mantissa', chinese: '尾數' },
+    { english: 'matrix', chinese: '矩陣' },
+    { english: 'addition principle', chinese: '加法原理' },
+    { english: 'rule of addition', chinese: '加法原理' },
+    { english: 'mean value theorem', chinese: '均值定理' },
+    { english: 'average', chinese: '平均' },
+    { english: 'meter', chinese: '公尺' },
+    { english: 'mean', chinese: '平均；平均值' },
+    { english: 'smooth curve', chinese: '平滑曲線' },
+    { english: 'milliliter', chinese: '公撮；毫升' },
+    { english: 'millimeter', chinese: '毫米' },
+    { english: 'cube', chinese: '立方；立方體' },
+    { english: 'minuend', chinese: '被減數' },
+    { english: 'minus', chinese: '減；負的' },
+    { english: 'minute', chinese: '分' },
+    { english: 'mode', chinese: '眾數；方式；方法；做法；形式；型；種類' },
+    { english: 'modulus', chinese: '模；模數；絕對值；尺度' },
+    { english: 'monomial', chinese: '單項式；單項的' },
+    { english: 'multiple', chinese: '倍數；倍式；多重' },
+    { english: 'multiplicand', chinese: '被乘數；被乘式' },
+    { english: 'multiplication', chinese: '乘法' },
+    { english: 'multiplication rule', chinese: '乘法原理；乘法法則' },
+    { english: 'multiplier', chinese: '乘數；乘式；乘子' },
+    { english: 'negative angle', chinese: '負角' },
+    { english: 'normal distribution', chinese: '常態分布；常態分配' },
+    { english: 'normal form', chinese: '範式；正規形式；法線式' },
+    { english: 'numerator', chinese: '分子' },
+    { english: 'obtuse angle', chinese: '鈍角' },
+    { english: 'octant', chinese: '卦限' },
+    { english: 'opposite side', chinese: '對邊' },
+    { english: 'ordinal', chinese: '順序的；序數' },
+    { english: 'ordinate', chinese: '縱標；縱座標' },
+    { english: 'origin', chinese: '原點' },
+    { english: 'orthogonal', chinese: '正交；直交' },
+    { english: 'parabola', chinese: '拋物線' },
+    { english: 'parallel', chinese: '平行' },
+    { english: 'parameter', chinese: '參數；參變量' },
+    { english: 'partition', chinese: '分割' },
+    { english: 'Pascal', chinese: '巴斯卡(人名)' },
+    { english: 'period', chinese: '週期' },
+    { english: 'permutation', chinese: '排列；置換' },
+    { english: 'perpendicular', chinese: '垂線；垂直面；垂直於；垂直的；成直角的；正交的(+to)；直立的；險陡的' },
+    { english: 'plane', chinese: '平面' },
+    { english: 'plus', chinese: '加；加號；正的' },
+    { english: 'point', chinese: '點' },
+    { english: 'polynomial', chinese: '多項式' },
+    { english: 'population', chinese: '母體；人口' },
+    { english: 'power', chinese: '冪；乘冪；次方；功率' },
+    { english: 'probability', chinese: '機率' },
+    { english: 'projection', chinese: '射影；射影算子；投影' },
+    { english: 'pyramid', chinese: '錐體；稜錐；角錐；角錐體；稜' },
+    { english: 'Pythagorean theorem', chinese: '畢氏定理；商高定理；勾股定理；畢達哥拉斯定理' },
+    { english: 'quadrant', chinese: '象限；四分之一圓周；九十度弧；四分之一圓；扇形體' },
+    { english: 'quartile', chinese: '四分位數' },
+    { english: 'quotient', chinese: '商；商數；商式' },
+    { english: 'radian', chinese: '弧度' },
+    { english: 'radical', chinese: '根數；根式；根基' },
+    { english: 'radius', chinese: '半徑' },
+    { english: 'range', chinese: '區域；範圍；值域；全距' },
+    { english: 'rate of interest', chinese: '利率' },
+    { english: 'ray', chinese: '射線' },
+    { english: 'rectangle', chinese: '長方形；矩形' },
+    { english: 'interest rate', chinese: '利率' },
+    { english: 'rectangular parallelopiped', chinese: '長方體' },
+    { english: 'recurring period', chinese: '循環節' },
+    { english: 'recursive relation', chinese: '遞迴關係' },
+    { english: 'reference angle', chinese: '參考角' },
+    { english: 'regression line', chinese: '迴歸線' },
+    { english: 'regular tetrahedron', chinese: '正四面體' },
+    { english: 'relative extreme', chinese: '相對極值' },
+    { english: 'relative maximum', chinese: '相對極大；相對極大值' },
+    { english: 'relatively prime', chinese: '互質' },
+    { english: 'remainder', chinese: '餘數；餘式；餘項；剩餘' },
+    { english: 'remainder theorem', chinese: '餘式定理' },
+    { english: 'repeated combination', chinese: '重複組合' },
+    { english: 'repeated permutation', chinese: '重複排列' },
+    { english: 'repeated root', chinese: '重根' },
+    { english: 'resonance', chinese: '共鳴；共振' },
+    { english: 'resultant force', chinese: '合力' },
+    { english: 'Riemann sum', chinese: '黎曼和' },
+    { english: 'right angle', chinese: '直角' },
+    { english: 'right cone', chinese: '正圓錐' },
+    { english: 'right cylinder', chinese: '正圓柱面' },
+    { english: 'right triangle', chinese: '直角三角形' },
+    { english: 'right-hand limit', chinese: '右極限' },
+    { english: 'root', chinese: '根' },
+    { english: 'row', chinese: '列' },
+    { english: 'row matrix', chinese: '列矩陣' },
+    { english: 'row operation', chinese: '列運算' },
+    { english: 'rule', chinese: '法；法則；規則；律' },
+    { english: 'rule of total probability', chinese: '全機率法則' },
+    { english: 'ruler', chinese: '直尺' },
+    { english: 'sample', chinese: '樣本' },
+    { english: 'sample mean', chinese: '樣本平均數；樣本平均數值' },
+    { english: 'sample point', chinese: '樣本點' },
+    { english: 'sample size', chinese: '樣本數' },
+    { english: 'sample space', chinese: '樣本空間' },
+    { english: 'sample survey', chinese: '樣本調查' },
+    { english: 'sample variance', chinese: '樣本變異數' },
+    { english: 'sampling', chinese: '抽樣' },
+    { english: 'scalar', chinese: '純量' },
+    { english: 'scalar multiplication', chinese: '純量乘法；係數積' },
+    { english: 'scatter diagram', chinese: '散布圖' },
+    { english: 'scientific notation', chinese: '科學記法' },
+    { english: 'secant', chinese: '正割；割線' },
+    { english: 'secant function', chinese: '正割函數' },
+    { english: 'secant line', chinese: '割線' },
+    { english: 'second', chinese: '秒' },
+    { english: 'sector', chinese: '扇形' },
+    { english: 'series', chinese: '級數' },
+    { english: 'set', chinese: '集；集合' },
+    { english: 'sexagesimal system', chinese: '六十進位制' },
+    { english: 'side', chinese: '邊；側' },
+    { english: 'sign of equality', chinese: '等號' },
+    { english: 'significant figure', chinese: '有效數；有效數字' },
+    { english: 'similar triangles', chinese: '相似三角形' },
+    { english: 'simple random sampling', chinese: '簡單隨機抽樣' },
+    { english: 'simple root', chinese: '單根' },
+    { english: 'sine', chinese: '正弦' },
+    { english: 'sine function', chinese: '正弦函數' },
+    { english: 'skew lines', chinese: '歪斜線' },
+    { english: 'skew matrix', chinese: '反對稱矩陣；斜矩陣' },
+    { english: 'slope', chinese: '斜率' },
+    { english: 'slope function', chinese: '斜率函數' },
+    { english: 'slope-intercept', chinese: '斜截' },
+    { english: 'smaller than', chinese: '小於' },
+    { english: 'solid cone', chinese: '立體錐' },
+    { english: 'solid of revolution', chinese: '迴轉體' },
+    { english: 'solid sphere', chinese: '實心球' },
+    { english: 'South pole', chinese: '南極' },
+    { english: 'space', chinese: '空間' },
+    { english: 'sphere', chinese: '球形；球面' },
+    { english: 'square', chinese: '正方形；平方；(方形)廣場；平方的；成直角的' },
+    { english: 'square relation', chinese: '平方關係' },
+    { english: 'square root', chinese: '平方根' },
+    { english: 'squeeze theorem', chinese: '夾擠定理' },
+    { english: 'standard', chinese: '標準；規格；度量衡標準；標準的' },
+    { english: 'standard deviation', chinese: '標準差' },
+    { english: 'standard factorization', chinese: '標準分解；標準分解式' },
+    { english: 'standard form', chinese: '標準式；標準形式' },
+    { english: 'standard position', chinese: '標準位置' },
+    { english: 'standard score', chinese: '標準計分' },
+    { english: 'standardization', chinese: '標準化' },
+    { english: 'statistical', chinese: '統計的；統計學的' },
+    { english: 'statistical graph', chinese: '統計圖' },
+    { english: 'statistical inference', chinese: '統計推論' },
+    { english: 'statistical table', chinese: '統計表' },
+    { english: 'statistical techniques', chinese: '統計方法；統計技巧' },
+    { english: 'statistics', chinese: '統計；統計學' },
+    { english: 'straight line correlation', chinese: '直線相關' },
+    { english: 'stratified sampling', chinese: '分層抽樣' },
+    { english: 'strictly decreasing function', chinese: '嚴格遞減函數' },
+    { english: 'subset', chinese: '子集合' },
+    { english: 'subtraction', chinese: '減法' },
+    { english: 'subtraction of vectors', chinese: '向量的減法' },
+    { english: 'subtrahend', chinese: '減數' },
+    { english: 'success probability', chinese: '成功機率' },
+    { english: 'sum', chinese: '和；總數' },
+    { english: 'sum event', chinese: '和事件' },
+    { english: 'summand', chinese: '被加數；被加項' },
+    { english: 'sum-to-product formula', chinese: '和差化積公式' },
+    { english: 'supplement angle', chinese: '補角' },
+    { english: 'sure event', chinese: '必然事件' },
+    { english: 'surface', chinese: '曲面' },
+    { english: 'symmetric equation', chinese: '對稱式' },
+    { english: 'symmetric form', chinese: '對稱形式' },
+    { english: 'symmetric matrix', chinese: '對稱方陣' },
+    { english: 'synthetic division', chinese: '綜合除法' },
+    { english: 'system of equations', chinese: '方程組' },
+    { english: 'systematic sampling', chinese: '系統抽樣' },
+    { english: 'table of logarithm', chinese: '對數表' },
+    { english: 'histogram', chinese: '直方圖' },
+    { english: 'tangent', chinese: '正切；切線' },
+    { english: 'tangent function', chinese: '正切函數' },
+    { english: 'tangent line', chinese: '切線' },
+    { english: 'tangent plane', chinese: '切平面' },
+    { english: 'tangential', chinese: '切線的' },
+    { english: 'tangential equation', chinese: '切線方程式' },
+    { english: 'term', chinese: '項' },
+    { english: 'terminal side', chinese: '終邊' },
+    { english: 'test', chinese: '檢驗；試驗；測驗；檢定' },
+    { english: 'tetrahedron', chinese: '四面形' },
+    { english: 'the approximate date', chinese: '大概日期' },
+    { english: 'third quartile', chinese: '第三四分位數' },
+    { english: 'times', chinese: '倍' },
+    { english: 'to approximate to 90%', chinese: '接近 90%' },
+    { english: 'transition matrix', chinese: '轉移矩陣' },
+    { english: 'transitive law', chinese: '遞移律' },
+    { english: 'translation', chinese: '平移' },
+    { english: 'transversal axis', chinese: '橫截軸；貫軸' },
+    { english: 'trapezoidal method', chinese: '梯形法' },
+    { english: 'triangle', chinese: '三角形' },
+    { english: 'triangle inequality', chinese: '三角不等式；三角形不等式' },
+    { english: 'triangular pyramid', chinese: '三稜錐' },
+    { english: 'triangulation', chinese: '三角剖分；三角測量' },
+    { english: 'trichotomy law', chinese: '三一律' },
+    { english: 'trigonometric function', chinese: '三角函數' },
+    { english: 'trigonometry', chinese: '三角學' },
+    { english: 'triple-angle formula', chinese: '三倍角公式' },
+    { english: 'two-point form', chinese: '兩點式' },
+    { english: 'union', chinese: '聯；併' },
+    { english: 'unit circle', chinese: '單位圓' },
+    { english: 'unit length', chinese: '單位長' },
+    { english: 'unit vector', chinese: '單位向量' },
+    { english: 'univariate polynomial', chinese: '單變數多項式；一元多項式' },
+    { english: 'universal set', chinese: '宇集' },
+    { english: 'unknown', chinese: '未知元；未知數；未知量' },
+    { english: 'unknown number', chinese: '未知數' },
+    { english: 'upper limit', chinese: '上極限' },
+    { english: 'upper sum', chinese: '上和' },
+    { english: 'variable', chinese: '變量；變數；變元；變項' },
+    { english: 'variance', chinese: '變異數' },
+    { english: 'vector', chinese: '向量' },
+    { english: 'velocity', chinese: '速度' },
+    { english: 'Venn diagram', chinese: '文氏圖' },
+    { english: 'vertex', chinese: '頂點' },
+    { english: 'vertical', chinese: '鉛垂的；頂點的' },
+    { english: 'vertical line', chinese: '鉛直線' },
+    { english: 'vibration', chinese: '振動；顫動；震動；擺動；搖擺' },
+    { english: 'wave crest', chinese: '波峰' },
+    { english: 'wave trough', chinese: '波谷' },
+    { english: 'weight', chinese: '權函數；權重函數' },
+    { english: 'weighted mean', chinese: '加權平均；加權平均值；加權平均數' },
+    { english: 'rectangular Cartesian coordinates', chinese: '直角座標' },
+    { english: 'work', chinese: '功' },
+    { english: 'x-coordinate', chinese: 'x座標' },
+    { english: 'x-intercept', chinese: 'x截距' },
+    { english: 'xy-plane', chinese: 'xy平面' },
+    { english: 'y-coordinate', chinese: 'y座標' },
+    { english: 'year', chinese: '年' },
+    { english: 'y-intercept', chinese: 'y截距' },
+    { english: 'zero', chinese: '零；零位；零點' },
+    { english: 'zero divisor', chinese: '零因子' },
+    { english: 'zero function', chinese: '零函數' },
+    { english: 'zero matrix', chinese: '零矩陣' },
+    { english: 'zero polynomial', chinese: '零多項式' },
+    { english: 'rectangular coordinates', chinese: '直角座標' },
+    { english: 'z-intercept', chinese: 'z截距' },
+    { english: 'whole number', chinese: '非負整數；整數' },
+    { english: 'nonnegative integer', chinese: '非負整數；整數' },
+    { english: 'second quartile', chinese: '第二四分位數；中位数' },
+    { english: 'maximal value', chinese: '最大；極大；最大值；極大值' },
+    { english: 'maximum', chinese: '最大；極大；最大值；極大值' },
+    { english: 'maximum value', chinese: '最大；極大；最大值；極大值' },
+    { english: 'minimal value', chinese: '最小；極小；最小值；極小值' },
+    { english: 'minimum', chinese: '最小；極小；最小值' },
+    { english: 'random numbers table', chinese: '亂數表；隨機號碼表' },
+    { english: 'table of random numbers', chinese: '亂數表；隨機號碼表' },
+    { english: 'null vector', chinese: '零向量' },
+    { english: 'zero vector', chinese: '零向量' },
+    { english: 'asymptote', chinese: '漸近線' },
+    { english: 'asymptotic line', chinese: '漸近線' },
+    { english: 'arithmetic average', chinese: '算術平均數；算術平均值；等差中項' },
+    { english: 'arithmetic mean', chinese: '算術平均數；算術平均值；等差中項' },
+    { english: 'prime', chinese: '質；質式；質數' },
+    { english: 'prime number', chinese: '質；質式；質數' }
+    ],
+    env: [
+    { english: 'dematerialization', chinese: '非物質化' },
+    { english: 'primary pollutant', chinese: '一次污染體' },
+    { english: 'biota', chinese: '一時代的動植物；一地區的動植物：生物群' },
+    { english: 'demographic problem', chinese: '人口問題' },
+    { english: 'human environment', chinese: '人文環境' },
+    { english: 'the management of human use of natural outdoor recreation', chinese: '人類對自然戶外休閒活動的使用管理' },
+    { english: 'the Stockholm Declaration', chinese: '人類環境宣言；斯德哥爾摩環境宣言' },
+    { english: 'indigenous', chinese: '土產的；土著的；本地的；生而俱有的；固有的；內在的' },
+    { english: 'soil fertility', chinese: '土壤肥力' },
+    { english: 'soil environment', chinese: '土壤環境' },
+    { english: 'atmospheric environment', chinese: '大氣環境' },
+    { english: 'waste non-biodegradable', chinese: '不可生物降解的廢物' },
+    { english: 'intrinsic asthma', chinese: '內因性氣喘；與過敏和季節有關，常發生在孩童' },
+    { english: 'public nuisance', chinese: '公害' },
+    { english: 'watershed', chinese: '分水嶺；流域' },
+    { english: 'space junk', chinese: '太空垃圾' },
+    { english: 'solar energy', chinese: '太陽能' },
+    { english: 'solar cycle', chinese: '太陽週期' },
+    { english: 'water industrial', chinese: '水工業' },
+    { english: 'aquatic life', chinese: '水生生物' },
+    { english: 'water pollution', chinese: '水污染' },
+    { english: 'aquaculture', chinese: '水產養殖' },
+    { english: 'water resources', chinese: '水資源' },
+    { english: 'What are the world\'s main sources of energy?', chinese: '世界上主要的能源是什麼？' },
+    { english: 'WBCSD', chinese: '世界永纘發展商業委員（簡稱）' },
+    { english: 'garcon wines', chinese: '加康葡萄酒；酒瓶' },
+    { english: 'Yokkaichi asthma', chinese: '四日市哮喘' },
+    { english: 'biochemical', chinese: '生化的' },
+    { english: 'bio invasion', chinese: '生物入侵' },
+    { english: 'biological control', chinese: '生物防治' },
+    { english: 'biomagnification', chinese: '生物放大' },
+    { english: 'bioremediation', chinese: '生物修復' },
+    { english: 'bioaccumulation', chinese: '生物累積' },
+    { english: 'bio enrichment', chinese: '生物富集' },
+    { english: 'biome', chinese: '生物群落' },
+    { english: 'biotic potential', chinese: '生物潛力' },
+    { english: 'bioconcentration', chinese: '生物濃縮' },
+    { english: 'lifestyle', chinese: '生活方式' },
+    { english: 'domestic refuse', chinese: '生活垃圾' },
+    { english: 'eco material', chinese: '生態材料' },
+    { english: 'ecosystem', chinese: '生態系統' },
+    { english: 'ecological design', chinese: '生態設計' },
+    { english: 'ecodevelopment', chinese: '生態發展' },
+    { english: 'ecological impact', chinese: '生態影響' },
+    { english: 'bottom-up', chinese: '由上而下' },
+    { english: 'white noise', chinese: '白雜訊；粉紅噪音' },
+    { english: 'target organism', chinese: '目標生物' },
+    { english: 'target organ', chinese: '目標器官' },
+    { english: 'photochemical smog', chinese: '光化學煙霧' },
+    { english: 'photovoltaic energy', chinese: '光伏能源' },
+    { english: 'What kind of energy does photovoltaic power generation rely on?', chinese: '光伏發電依靠什麼樣的能源' },
+    { english: 'global commons', chinese: '全球公域' },
+    { english: 'global warming', chinese: '全球暖化' },
+    { english: 'GWP', chinese: '全球暖化潛勢' },
+    { english: 'crisis', chinese: '危機；緊急關頭；轉折點；病情危險期' },
+    { english: 'reclaimed water', chinese: '回收水' },
+    { english: 'organic carbon', chinese: '有機碳' },
+    { english: 'sewage', chinese: '污水' },
+    { english: 'sludge', chinese: '污泥；爛泥；泥狀雪' },
+    { english: 'sludge digestion', chinese: '污泥消化' },
+    { english: 'pollution air', chinese: '污染空氣' },
+    { english: 'pollution control', chinese: '污染控制' },
+    { english: 'pollution thermal', chinese: '污染熱' },
+    { english: 'natural resources and management', chinese: '自然資源與管理' },
+    { english: 'self-instructional methods', chinese: '自學方法' },
+    { english: 'village', chinese: '村落' },
+    { english: 'Millions of people die from smoking each year.', chinese: '每年都會有數百萬人死於吸煙。' },
+    { english: 'In what ways that gasoline motor cars are better than EVs?', chinese: '汽油汽車在哪些方面比電動汽車更好？' },
+    { english: 'deposition', chinese: '沈降' },
+    { english: 'desertification', chinese: '沙化；沙漠化' },
+    { english: 'sand storm', chinese: '沙塵暴' },
+    { english: 'hazards', chinese: '災害' },
+    { english: 'red tide', chinese: '赤潮' },
+    { english: 'into the future', chinese: '走向未來' },
+    { english: 'accident', chinese: '事故；意外的' },
+    { english: 'supply chain', chinese: '供應鏈' },
+    { english: 'coordinated approach', chinese: '協調方法' },
+    { english: 'coordinated', chinese: '協調的' },
+    { english: 'stationary', chinese: '固定' },
+    { english: 'stationary pollution source', chinese: '固定污染源' },
+    { english: 'solid waste', chinese: '固體廢棄物' },
+    { english: 'junk', chinese: '垃圾' },
+    { english: 'refuse burning', chinese: '垃圾焚化；垃圾焚燒' },
+    { english: 'waste incineration', chinese: '垃圾焚化；垃圾焚燒' },
+    { english: 'La Nina phenomenon', chinese: '妮娜（反聖嬰）現象' },
+    { english: 'benthos', chinese: '底棲動物；底生生物；海底的動植物群' },
+    { english: 'carrying capacity', chinese: '承載力' },
+    { english: 'radioactive deposit', chinese: '放射性沈積物' },
+    { english: 'radioactive dust', chinese: '放射性塵埃' },
+    { english: 'radioactive waste water', chinese: '放射性廢水' },
+    { english: 'radwaste', chinese: '放射性廢物' },
+    { english: 'radioactive waste', chinese: '放射性廢物' },
+    { english: 'species vulnerable', chinese: '易受傷害的物種' },
+    { english: 'volatile', chinese: '易揮發的；易發作的；爆炸性的' },
+    { english: 'bill of material', chinese: '物料清單' },
+    { english: 'BOM', chinese: '物料清單' },
+    { english: 'species', chinese: '物種' },
+    { english: 'species diversity', chinese: '物種多樣性' },
+    { english: 'species indicator', chinese: '物種指標' },
+    { english: 'material cycle', chinese: '物質循環' },
+    { english: 'Internet of Things', chinese: '物聯網' },
+    { english: 'How does IoT work?', chinese: '物聯網如何工作？' },
+    { english: 'What are the pros and cons of the Internet of things?', chinese: '物聯網的優缺點是什麼？' },
+    { english: 'knowledge', chinese: '知識；學識；學問；知道；了解；消息' },
+    { english: 'knowledge and understanding', chinese: '知識與瞭解' },
+    { english: 'community', chinese: '社區；共同社會；共同體' },
+    { english: 'social costs', chinese: '社會成本' },
+    { english: 'social indicator', chinese: '社會指標' },
+    { english: 'socio-economic', chinese: '社會經濟' },
+    { english: 'social environment', chinese: '社會環境' },
+    { english: 'air pollution', chinese: '空氣污染' },
+    { english: 'atmospheric pollution', chinese: '空氣污染' },
+    { english: 'air quality', chinese: '空氣質量' },
+    { english: 'air quality standards', chinese: '空氣質量標準' },
+    { english: 'fine particulate', chinese: '细粒狀物' },
+    { english: 'fertilizer', chinese: '肥料；促進發展者' },
+    { english: 'fertilizer pollution', chinese: '肥料污染' },
+    { english: 'education informal', chinese: '非正式教育' },
+    { english: 'erosion', chinese: '侵蝕；腐蝕' },
+    { english: 'conservation', chinese: '保護；保存；管理' },
+    { english: 'conservation standards', chinese: '保護標準' },
+    { english: 'urbanization', chinese: '城市化' },
+    { english: 'urban ecosystems', chinese: '城市生態系統' },
+    { english: 'municipal refuse', chinese: '城市垃圾' },
+    { english: 'urban', chinese: '城市的；居住在城市的' },
+    { english: 'urban environment', chinese: '城市環境' },
+    { english: 'town trail', chinese: '城鎮小徑' },
+    { english: 'declaration', chinese: '宣布；宣告；宣言；聲明' },
+    { english: 'to be solved', chinese: '待解決' },
+    { english: 'restoration', chinese: '恢復；復位；復辟；修復；復原；整修；重建' },
+    { english: 'persistent organic pollutants', chinese: '持久性有機污染體(POPs)' },
+    { english: 'indicator organism', chinese: '指標生物' },
+    { english: 'policy', chinese: '政策；方針；策略；手段' },
+    { english: 'policy anticipatory', chinese: '政策預期' },
+    { english: 'policy environmental', chinese: '政策環境' },
+    { english: 'toxicity', chinese: '毒性；毒力' },
+    { english: 'activated sludge', chinese: '活性污泥' },
+    { english: 'activity data', chinese: '活動數據' },
+    { english: 'education for environment and sustainability', chinese: '為環境及永續性的教育(EfES)' },
+    { english: 'education for the environment', chinese: '為環境的教育' },
+    { english: 'vaccine', chinese: '疫苗；牛痘苗' },
+    { english: 'science-based target', chinese: '科學碳目標' },
+    { english: 'SBTs', chinese: '科學碳目標（簡稱）' },
+    { english: 'science-based targets initiative', chinese: '科學碳目標倡議' },
+    { english: 'SBTi', chinese: '科學碳目標倡議（簡稱）' },
+    { english: 'mutation', chinese: '突變；變化；浮沉盛衰；變質；元音變化' },
+    { english: 'red data', chinese: '紅色資料冊' },
+    { english: 'US plastic pact', chinese: '美國塑料公約' },
+    { english: 'aesthetics', chinese: '美學；美的哲學' },
+    { english: 'background radiation', chinese: '背景輻射' },
+    { english: 'background noise', chinese: '背景雜音' },
+    { english: 'Lethal concentration', chinese: '致死濃度' },
+    { english: 'carcinogen', chinese: '致癌物' },
+    { english: 'carcinogenic', chinese: '致癌物的' },
+    { english: 'tundra', chinese: '苔原；凍土地帶；凍原' },
+    { english: 'British Standards Institution', chinese: '英國標準協會' },
+    { english: 'BSI', chinese: '英國標準協會（簡稱）' },
+    { english: 'to be managed', chinese: '要管理' },
+    { english: 'plan', chinese: '計劃；方案；打算；圖紙；平面圖' },
+    { english: 'heavy metal', chinese: '重金屬' },
+    { english: 'heavy metal pollution', chinese: '重金屬污染' },
+    { english: 'values social', chinese: '重視社會' },
+    { english: 'values moral', chinese: '重視道德' },
+    { english: 'reusable', chinese: '重複使用的；可再度使用的；可多次使用的' },
+    { english: 'noise reduction', chinese: '降噪' },
+    { english: 'noise abatement', chinese: '降噪' },
+    { english: 'limiting factor', chinese: '限制因素' },
+    { english: 'risk assessment', chinese: '風險評估' },
+    { english: 'risk assessment matrix', chinese: '風險評估矩陣' },
+    { english: 'food web', chinese: '食物網' },
+    { english: 'food chain', chinese: '食物鏈' },
+    { english: 'food safety', chinese: '食品安全' },
+    { english: 'food contamination', chinese: '食品污染' },
+    { english: 'food pollution', chinese: '食品污染' },
+    { english: 'autecology', chinese: '個體生態學' },
+    { english: 'primary environment', chinese: '原生環境' },
+    { english: 'summer', chinese: '夏天' },
+    { english: 'courtyard environment', chinese: '庭院環境；院落環境' },
+    { english: 'predator', chinese: '捕食者；食肉動物；掠奪者' },
+    { english: 'education out of school', chinese: '校外教育' },
+    { english: 'nuclear', chinese: '核子' },
+    { english: 'nuclear safety', chinese: '核安全' },
+    { english: 'nuclear accident', chinese: '核事故' },
+    { english: 'nuclear waste', chinese: '核廢料' },
+    { english: 'case study', chinese: '案例分析' },
+    { english: 'climate', chinese: '氣候；風土；具有某種氣候的區域' },
+    { english: 'climate change', chinese: '氣候變遷' },
+    { english: 'asthma', chinese: '氣喘（病）；哮喘' },
+    { english: 'aerosol', chinese: '氣膠；浮質' },
+    { english: 'N20', chinese: '氧化亞氮' },
+    { english: 'seawater', chinese: '海水' },
+    { english: 'seawater intrusion', chinese: '海水入侵' },
+    { english: 'marine pollution', chinese: '海洋污染' },
+    { english: 'consumer', chinese: '消費者；消耗者' },
+    { english: 'dust', chinese: '粉塵；粉末' },
+    { english: 'energy', chinese: '能量；活力；幹勁；精力；能力' },
+    { english: 'ozone hole', chinese: '臭氧空洞' },
+    { english: 'herbivore', chinese: '草食動物' },
+    { english: 'wilderness', chinese: '荒野；荒漠；無人煙處' },
+    { english: 'degeneration', chinese: '退化；衰退；墮落' },
+    { english: 'herbicide', chinese: '除草劑' },
+    { english: 'dedusting', chinese: '除塵' },
+    { english: 'dust removal', chinese: '除塵' },
+    { english: 'dust remover', chinese: '除塵器' },
+    { english: 'high-performance', chinese: '高性能' },
+    { english: 'health', chinese: '健康；健康狀況' },
+    { english: 'simulation', chinese: '偽裝；模仿；模擬' },
+    { english: 'fauna', chinese: '動物群；動物區系' },
+    { english: 'regional environment', chinese: '區域環境' },
+    { english: 'blockchain', chinese: '區塊鏈' },
+    { english: 'How does blockchain affect economics?', chinese: '區塊鏈如何影響經濟學？' },
+    { english: 'What is the essential feature of blockchain?', chinese: '區塊鏈的本質特徵是什麼？' },
+    { english: 'regionalization', chinese: '區劃；分成地區；按地區安排；地區化' },
+    { english: 'participation', chinese: '參與' },
+    { english: 'in which to get involved', chinese: '參與一些內容' },
+    { english: 'national park', chinese: '國家公園' },
+    { english: 'nationally determined contribution', chinese: '國家自定預期貢獻' },
+    { english: 'NDC', chinese: '國家自定預期貢獻（簡稱）' },
+    { english: 'Financial Stability Board', chinese: '國際組織金融穩定委員會' },
+    { english: 'FSB', chinese: '國際組織金融穩定委員會（簡稱）' },
+    { english: 'International Monetary Fund', chinese: '國際貨幣基金' },
+    { english: 'IMF', chinese: '國際貨幣基金（簡稱）' },
+    { english: 'international development strategy', chinese: '國際發展戰略' },
+    { english: 'international environmental', chinese: '國際環境法' },
+    { english: 'training environmental', chinese: '培訓環境' },
+    { english: 'training environmental in-services', chinese: '培訓環境服務' },
+    { english: 'training environmental administration', chinese: '培訓環境管理' },
+    { english: 'gene pool', chinese: '基因庫' },
+    { english: 'earmarks', chinese: '專項撥款；專款專用' },
+    { english: 'education in the', chinese: '從環境中教育' },
+    { english: 'What do you think of carbon neutral?', chinese: '您如何看待碳中和？' },
+    { english: 'What kind of resources do you know are in shortage?', chinese: '您知道哪些資源短缺？' },
+    { english: 'Can you talk about COVID-19 in 2022?', chinese: '您能談談2022年的COVID-19嗎？' },
+    { english: 'Could you please talk about the causes of the air pollution?', chinese: '您能談談空氣污染的原因嗎？' },
+    { english: 'Could you please talk about the effects of the environmental pollution?', chinese: '您能談談環境污染的影響嗎？' },
+    { english: 'How do you think people can prevent viruses from spreading?', chinese: '您認為人們如何防止病毒傳播？' },
+    { english: 'Do you think photovoltaic Energy can help to solve the problem of resources shortages?', chinese: '您認為光伏能源可以幫助解決資源短缺的問題嗎？' },
+    { english: 'What do you think is the healthy demographic structure?', chinese: '您認為健唐的人口統計結構是什麼？' },
+    { english: 'What do you think is the biggest advantage of EV?', chinese: '您認為電動汽車的最大優勢是什麼？' },
+    { english: 'What changes do you think the carbon neutral could bring to us?', chinese: '您認為碳中和會帶來哪些變化？' },
+    { english: 'empowerment', chinese: '授權' },
+    { english: 'emission', chinese: '排放；放射；散發；射出物' },
+    { english: 'emission factors', chinese: '排放係數' },
+    { english: 'Exploring the social dimensions of the climate crisis is a hot topic.', chinese: '探索氣候危機的社會層面是一個熱門話題。' },
+    { english: 'control integrated', chinese: '控制集成' },
+    { english: 'landfill', chinese: '掩埋；垃圾填埋；垃圾填埋地' },
+    { english: 'landfill site', chinese: '掩埋場' },
+    { english: 'education', chinese: '教育；培養；訓練' },
+    { english: 'education adult', chinese: '教育成人' },
+    { english: 'education agricultural', chinese: '教育農業' },
+    { english: 'education integrated', chinese: '教育綜合科學' },
+    { english: 'teacher education', chinese: '教師教育；師資培育' },
+    { english: 'teacher education pre', chinese: '教師教育前服務' },
+    { english: 'teacher responsibility', chinese: '教師責任' },
+    { english: 'teaching team', chinese: '教學團隊' },
+    { english: 'fungicide', chinese: '殺菌劑' },
+    { english: 'pesticide', chinese: '殺蟲劑' },
+    { english: 'insecticides', chinese: '殺蟲劑' },
+    { english: 'HFCS', chinese: '氫氟碳化物' },
+    { english: 'purification', chinese: '淨化；提純；精鍊' },
+    { english: 'net zero', chinese: '淨零排放' },
+    { english: 'ambient', chinese: '現狀的；周圍的' },
+    { english: 'ambient assessment', chinese: '現狀評估' },
+    { english: 'on-site', chinese: '現場；查證' },
+    { english: 'phenomenon', chinese: '現象；稀有的事；奇蹟' },
+    { english: 'product life cycle', chinese: '產品生命週期(PLC)' },
+    { english: 'carbon footprint of a product', chinese: '產品碳足跡' },
+    { english: 'CFP', chinese: '產品碳足跡（簡稱）' },
+    { english: 'exotics', chinese: '異國清調' },
+    { english: 'moving pollution source', chinese: '移動污染源' },
+    { english: 'Tbilisi Declaration', chinese: '第比利斯宣言' },
+    { english: 'particulate matter', chinese: '粒狀物；顆粒物' },
+    { english: 'bacterial toxin', chinese: '細菌毒素' },
+    { english: 'lifelong education', chinese: '終身教育' },
+    { english: 'general budget allocation', chinese: '統收統支' },
+    { english: 'desulphurization', chinese: '脫硫' },
+    { english: 'hormone', chinese: '荷爾蒙' },
+    { english: 'disposal', chinese: '處理；處置；配置；布置；排列' },
+    { english: 'to be appreciated', chinese: '被欣賞' },
+    { english: 'to be preserved', chinese: '被保存' },
+    { english: 'to be respected', chinese: '被尊重' },
+    { english: 'planning', chinese: '規劃；制訂計畫；城市規劃；土地規劃' },
+    { english: 'planning regional', chinese: '規劃區域' },
+    { english: 'planning anticipatory', chinese: '規劃預期' },
+    { english: 'planning environmental', chinese: '規劃環境' },
+    { english: 'generalist', chinese: '通才；通曉數門知識者' },
+    { english: 'chain reaction', chinese: '連鎖反應' },
+    { english: 'land capability', chinese: '陸地能力' },
+    { english: 'environmental assessment of single', chinese: '單一因素評估' },
+    { english: 'monoculture', chinese: '單一栽培；單一經營' },
+    { english: 'muffler', chinese: '圍巾；面紗；厚手套' },
+    { english: 'off-site', chinese: '場外' },
+    { english: 'recycling economy', chinese: '循環經濟' },
+    { english: 'HP constructs computers with ocean-bound plastics.', chinese: '惠普使用海洋塑膠製造計算機。' },
+    { english: 'offensive odor', chinese: '惡臭' },
+    { english: 'particulate', chinese: '粧狀（物）；顆粒（物）' },
+    { english: 'plastic pact', chinese: '塑料公約' },
+    { english: 'electric vehicles', chinese: '電動汽車' },
+    { english: 'green consumer', chinese: '綠色消費者' },
+    { english: 'environmental case study', chinese: '環境的案例硏究' },
+    { english: 'village environment', chinese: '村落環境' },
+    { english: 'reuse materials', chinese: '材料再利用' },
+    { english: 'drylands', chinese: '旱地' },
+    { english: 'improve occupational safety', chinese: '改善職業安全' },
+    { english: 'technology assessment', chinese: '技術評估' },
+    { english: 'skill', chinese: '技巧' },
+    { english: 'in which we all live together', chinese: '我們共同生活' },
+    { english: 'vibration absorption', chinese: '吸震' },
+    { english: 'Where do you think scientists go to study viruses?', chinese: '你認為科學家去哪裡硏究病毒？' },
+    { english: 'Do you think space exploration could help with the population explosion?', chinese: '你認為太空探索可以幫助解決人口爆炸問題嗎？' },
+    { english: 'Do you have any suggestions of making us a greener planet?', chinese: '讓我們成為一個更綠色的星球嗎？' },
+    { english: 'low carbon economy', chinese: '低碳經濟' },
+    { english: 'low carbon coordination', chinese: '低碳協調；低碳物流' },
+    { english: 'low carbon', chinese: '低碳' },
+    { english: 'behavior', chinese: '行為；舉止；態度' },
+    { english: 'natural environment', chinese: '自然環境' },
+    { english: 'nature-based solutions', chinese: '自然基礎解決方案' },
+    { english: 'NBS', chinese: '自然基礎解決方案（簡稱）' },
+    { english: 'natural reserve', chinese: '自然保護區' },
+    { english: 'natural conservation', chinese: '自然保育' },
+    { english: 'induced hearing loss', chinese: '耳聾' },
+    { english: 'management plan that considers', chinese: '考慮到的管理計劃' },
+    { english: 'pollutant', chinese: '污染體；汙染物；汙染源' },
+    { english: 'pollution noise', chinese: '污染噪聲' },
+    { english: 'pollution sources monitoring', chinese: '污染源監測' },
+    { english: 'pollution source', chinese: '污染源' },
+    { english: 'pollution chemical', chinese: '污染化學品' },
+    { english: 'pollution chemistry', chinese: '污染化學' },
+    { english: 'contamination', chinese: '污染；弄髒；玷汙' },
+    { english: 'pollution', chinese: '污染；汙染物；汙染地區' },
+    { english: 'sludge conditioning', chinese: '污泥調理' },
+    { english: 'disposal of sludge', chinese: '污泥處理' },
+    { english: 'sewage pond', chinese: '污水塘' },
+    { english: 'wastewater treatment plant', chinese: '污水處理廠' },
+    { english: 'wastewater', chinese: '污水；廢水' },
+    { english: 'secondary environment', chinese: '次生環境' },
+    { english: 'organic agriculture', chinese: '有機農業' },
+    { english: 'organic food', chinese: '有機食品' },
+    { english: 'organic compounds', chinese: '有機物' },
+    { english: 'organic pollutant', chinese: '有機污染體' },
+    { english: 'toxic substances', chinese: '有毒物質' },
+    { english: 'hazardous', chinese: '有危險的；冒險的' },
+    { english: 'safe landfill', chinese: '安全掩埋' },
+    { english: 'security landfill', chinese: '安全掩埋' },
+    { english: 'cosmic environment', chinese: '宇宙環境' },
+    { english: 'spaceship earth', chinese: '宇宙飛船地球' },
+    { english: 'What would happen if we had an aging problem?', chinese: '如果我們有衰老問題，會發生什麼？' },
+    { english: 'How to achieve the goal of carbon neutral?', chinese: '如何實現碳中和的目標？' },
+    { english: 'multidisciplinary', chinese: '多學科的' },
+    { english: 'multidisciplinary approach', chinese: '多學科方法' },
+    { english: 'multiple use', chinese: '多次使用' },
+    { english: 'land subsidence', chinese: '地層下陷' },
+    { english: 'topography', chinese: '地誌；地形圖；地形；地貌；地形學；地形測量學' },
+    { english: 'geoscience', chinese: '地球科學' },
+    { english: 'surface water pollution', chinese: '地表水污染' },
+    { english: 'groundwater depression', chinese: '地下水窪地' },
+    { english: 'groundwater funnel', chinese: '地下水漏斗' },
+    { english: 'groundwater pollution', chinese: '地下水污染' },
+    { english: 'depression cone of groundwater', chinese: '地下水凹陷錐' },
+    { english: 'groundwater', chinese: '地下水' },
+    { english: 'teacher education in-service', chinese: '在職教師教育' },
+    { english: 'review assessment', chinese: '回顧評估' },
+    { english: 'recycling', chinese: '回收利用' },
+    { english: 'hazardous chemical', chinese: '危險化學品' },
+    { english: 'hazardous waste', chinese: '危害性廢棄物' },
+    { english: 'recycled plastics', chinese: '再生塑膠製成' },
+    { english: 'renewable energy', chinese: '再生能源' },
+    { english: 'regenerative', chinese: '再生的' },
+    { english: 'recycled', chinese: '再生的' },
+    { english: 'regenerative material', chinese: '再生材料' },
+    { english: 'shared resources', chinese: '共享資源' },
+    { english: 'global environment', chinese: '全球環境' },
+    { english: 'Global warming potential', chinese: '全球暖化潛勢' },
+    { english: 'PFCS', chinese: '全氟碳化物' },
+    { english: 'light pollution', chinese: '光污染' },
+    { english: 'ecotone', chinese: '交錯色調' },
+    { english: 'goal', chinese: '目標；目的地；目的' },
+    { english: 'CH4', chinese: '甲烷' },
+    { english: 'top-down', chinese: '由下而上' },
+    { english: 'ecological disturbance', chinese: '生態擾動' },
+    { english: 'ecological imbalance', chinese: '生態擾動' },
+    { english: 'ecology', chinese: '環境' },
+    { english: 'ecological succession', chinese: '生態演替' },
+    { english: 'eco-agriculture', chinese: '生態農業' },
+    { english: 'eco pond', chinese: '生態塘' },
+    { english: 'ecological assessment', chinese: '生態評估' },
+    { english: 'ecological migration', chinese: '生態移民' },
+    { english: 'ecosphere', chinese: '生態圏；自由呼吸空間；生態層' },
+    { english: 'ecological degeneration', chinese: '生態退化' },
+    { english: 'ecological indicators', chinese: '生態指標' },
+    { english: 'ecological restoration', chinese: '生態恢復' },
+    { english: 'knowledge of ecology', chinese: '生態知識' },
+    { english: 'ecological', chinese: '生態的' },
+    { english: 'ecological footprint', chinese: '生態足跡' },
+    { english: 'ecosystem evaluation', chinese: '生態系統評價' },
+    { english: 'ecological housing', chinese: '生態住宅' },
+    { english: 'ecological residence', chinese: '生態住宅' },
+    { english: 'ecological niche', chinese: '生態位' },
+    { english: 'ecological factor', chinese: '生態因素' },
+    { english: 'ecological demonstration area', chinese: '生態示範區' },
+    { english: 'ecological balance', chinese: '生態平衡' },
+    { english: 'ecological backlash', chinese: '生態反彈' },
+    { english: 'eco-industrial park', chinese: '生態工業園區' },
+    { english: 'eco-industry', chinese: '生態工業' },
+    { english: 'quality of life', chinese: '生活質量' },
+    { english: 'biotic environment', chinese: '生物環境' },
+    { english: 'biomass', chinese: '生物量' },
+    { english: 'biotope', chinese: '生活小區' },
+    { english: 'biological purification', chinese: '生物淨化' },
+    { english: 'biosphere reserves', chinese: '生物圈保護區' },
+    { english: 'biosphere', chinese: '生物圈' },
+    { english: 'biological indicator', chinese: '生物指標' },
+    { english: 'biological pollution', chinese: '生物污染' },
+    { english: 'biosafety', chinese: '生物安全' },
+    { english: 'loss of biodiversity', chinese: '生物多樣性減少' },
+    { english: 'biodiversity', chinese: '生物多樣性；生物歧異性；生物龐雜度' },
+    { english: 'biogeochemists', chinese: '生物地球化學家' },
+    { english: 'biotic intrusion', chinese: '生物人侵' },
+    { english: 'organism', chinese: '生物' },
+    { english: 'life cycle design', chinese: '生命週期設計(LCD)' },
+    { english: 'life cycle', chinese: '生命週期' },
+    { english: 'biochemical oxygen demand', chinese: '生化需氧量(BOD)' },
+    { english: 'flood plain', chinese: '氾濫平原' },
+    { english: 'sustainable development', chinese: '永續發展' },
+    { english: 'knowledge of sustainability', chinese: '永續知識' },
+    { english: 'sustainability', chinese: '永續' },
+    { english: 'El-Nino phenomenon', chinese: '尼諾（聖嬰）現象' },
+    { english: 'inhalable particulate', chinese: '可吸入粒狀物(IP)' },
+    { english: 'traceable', chinese: '可追溯；可追蹤的；起源於……的；可歸因的' },
+    { english: 'compostable', chinese: '可堆肥的；可用作堆肥的；可作為混合肥料的' },
+    { english: 'respirable particulate matter', chinese: '可吸入粒狀物' },
+    { english: 'inhalable', chinese: '可吸入' },
+    { english: 'respirable', chinese: '能呼吸的' },
+    { english: 'recyclable', chinese: '可回收利用的' },
+    { english: 'renewable', chinese: '可繼續' },
+    { english: 'waste biodegradable', chinese: '可生物降解的廢物' },
+    { english: 'desulfurization', chinese: '除硫' },
+    { english: 'functional until', chinese: '功能單元（functional unit）' },
+    { english: 'education participant centered', chinese: '以教育參與者為中心' },
+    { english: 'anthropocentric', chinese: '以人類觀點解釋宇宙萬物的' },
+    { english: 'subjective assessment', chinese: '主觀評價' },
+    { english: 'world heritage site', chinese: '世界遺產地' },
+    { english: 'world bank', chinese: '世界銀行' },
+    { english: 'World Resources Institute', chinese: '世界資源硏究室' },
+    { english: 'WRI', chinese: '世界資源研究室（簡稱）' },
+    { english: 'Worldwide Fund for Nature', chinese: '世界自然基金會' },
+    { english: 'WWF', chinese: '世界自然基金會（簡稱）' },
+    { english: 'World Business Council for Sustainable Development', chinese: '世界永續發展商業委員會' },
+    { english: 'water environment', chinese: '水環境' },
+    { english: 'water quality standards', chinese: '水質標準' },
+    { english: 'water bloom', chinese: '水花；水華' },
+    { english: 'Minamata disease', chinese: '水俁病' },
+    { english: 'water international', chinese: '水國際' },
+    { english: 'random noise', chinese: '元規噪音' },
+    { english: 'approach', chinese: '方法；教學方法；接近；靠近；即將達到；近乎' },
+    { english: 'knowledge of culture', chinese: '文化知識' },
+    { english: 'culture', chinese: '文化；教養；陶冶；修養' },
+    { english: 'education outdoor', chinese: '戶外教育' },
+    { english: 'psychology', chinese: '心理學；心理；心理特點' },
+    { english: 'space exploration', chinese: '太空探索' },
+    { english: 'chemical oxygen demand', chinese: '化學需氧量(COD)' },
+    { english: 'chemical', chinese: '化學；化學製品；化學藥品' },
+    { english: 'SF6', chinese: '六氟化硫' },
+    { english: 'park', chinese: '公園；遊樂場；停車場' },
+    { english: 'public participation', chinese: '公眾參與' },
+    { english: 'public nuisance disease', chinese: '公害病' },
+    { english: 'public health', chinese: '公共衛生' },
+    { english: 'public inputs', chinese: '公共投入' },
+    { english: 'public interest', chinese: '公共利益' },
+    { english: 'citizenship behavior', chinese: '公民身份行為' },
+    { english: 'internal carbon pricing', chinese: '內部碳定價' },
+    { english: 'ICP', chinese: '內部碳定價（簡稱）' },
+    { english: 'What is photovoltaic energy?', chinese: '什麼是光伏能源？' },
+    { english: 'nonrenewable', chinese: '不可再生' },
+    { english: 'atmospheric', chinese: '大氣的；大氣中的；大氣所引起的' },
+    { english: 'atmospheric deposition', chinese: '大氣沈降' },
+    { english: 'soil pollution', chinese: '土壤污染' },
+    { english: 'land treatment system', chinese: '土地處理系統' },
+    { english: 'land use planning', chinese: '土地利用規劃' },
+    { english: 'sink', chinese: '下沉；落；沒；下陷' },
+    { english: 'NF3', chinese: '三氟化氮' },
+    { english: 'intrusion', chinese: '入侵' },
+    { english: 'entry-level', chinese: '入門級' },
+    { english: 'human settlements', chinese: '人類住區' },
+    { english: 'human ecology', chinese: '人類生態學' },
+    { english: 'personnel specialists', chinese: '人事專家' },
+    { english: 'personnel technicians', chinese: '人事技術人員' },
+    { english: 'people\'s university', chinese: '人民大學' },
+    { english: 'artificial environment', chinese: '人工環境' },
+    { english: 'artificial intelligence', chinese: '人工智慧' },
+    { english: 'population control', chinese: '人口控制' },
+    { english: 'population density', chinese: '人口密度' },
+    { english: 'secondary data', chinese: '二級數據' },
+    { english: 'C02e carbon dioxide equivalent', chinese: '二氧化碳當量' },
+    { english: 'CO2', chinese: '二氧化碳（簡稱）' },
+    { english: 'secondary pollutant', chinese: '二次污染體' },
+    { english: 'primary data', chinese: '一級數據' },
+    { english: 'CBAM certificate', chinese: 'CBAM憑證' },
+    { english: 'HEPA filter', chinese: '高效率粧子空氣濾器（簡稱）' }
+    ]
+};
+
+let vocabulary = [];
+let currentMode = 1;
+let currentQuestion = 0;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let answered = false;
+let startTime = null;
+let timerInterval;
+let userName = '';
+
+function selectCategory(category) {
+    vocabulary = vocabularyData[category]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 50);
+    
+    document.querySelector('.quiz-content').style.display = 'block';
+}
+
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        selectCategory(e.target.dataset.category);
+    });
+});
+
+function generateQuestion(mode, currentWord) {
+    const question = mode === 1 ? currentWord.english : currentWord.chinese;
+    const correctAnswer = mode === 1 ? currentWord.chinese : currentWord.english;
+    
+    let wrongOptions = vocabulary
+        .filter(word => word !== currentWord)
+        .map(word => mode === 1 ? word.chinese : word.english)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+    
+    const options = [...wrongOptions, correctAnswer]
+        .sort(() => Math.random() - 0.5);
+    
+    return {
+        question: question,
+        options: options,
+        correct: options.indexOf(correctAnswer)
+    };
+}
+
+function updateTimer() {
+    if (!startTime) return;
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    document.getElementById('timer').textContent = 
+        `Total Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function showQuestion() {
+    if (!vocabulary.length) return;
+    
+    const currentWord = vocabulary[currentQuestion];
+    const questionData = generateQuestion(currentMode, currentWord);
+    
+    document.getElementById('question').textContent = questionData.question;
+    
+    const optionsHtml = questionData.options.map((option, index) => 
+        `<div class="option fade-in" data-index="${index}">${option}</div>`
+    ).join('');
+    
+    document.getElementById('options').innerHTML = optionsHtml;
+    document.getElementById('next').style.display = 'none';
+    answered = false;
+    
+    const progress = ((currentQuestion) / vocabulary.length) * 100;
+    document.querySelector('.progress').style.width = `${progress}%`;
+    
+    document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', (e) => selectOption(e, questionData.correct));
+    });
+}
+
+function selectOption(e, correct) {
+    if (answered) return;
+    
+    answered = true;
+    const selectedIndex = parseInt(e.target.dataset.index);
+    
+    document.querySelectorAll('.option').forEach(option => {
+        const index = parseInt(option.dataset.index);
+        if (index === correct) {
+            option.classList.add('correct');
+        } else if (index === selectedIndex) {
+            option.classList.add('incorrect');
+        }
+    });
+    
+    if (selectedIndex === correct) {
+        correctAnswers++;
+        document.getElementById('correct').textContent = correctAnswers;
+    } else {
+        wrongAnswers++;
+        document.getElementById('wrong').textContent = wrongAnswers;
+    }
+    
+    document.getElementById('next').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < vocabulary.length) {
+        showQuestion();
+    } else {
+        showFinalScore();
+    }
+}
+
+function showFinalScore() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    
+    const currentDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Get the selected category and mode
+    const selectedCategory = document.querySelector('.category-btn.active')?.dataset.category || '';
+    const selectedMode = document.querySelector('.mode-btn.active')?.dataset.mode || '';
+    
+    // Convert category and mode to display text
+    const categoryDisplay = {
+        'ai': 'AI Literacy',
+        'it': 'General IT',
+        'math': 'Math',
+        'env': 'Environmental Education'
+    }[selectedCategory] || '';
+    
+    const modeDisplay = {
+        '1': 'English → Chinese',
+        '2': 'Chinese → English'
+    }[selectedMode] || '';
+    
+    document.querySelector('.quiz-container').innerHTML = `
+        <h2 class="fade-in">Quiz Complete!</h2>
+        <p class="score fade-in">Name: ${userName}</p>
+        <p class="score fade-in">Category: ${categoryDisplay}</p>
+        <p class="score fade-in">Mode: ${modeDisplay}</p>
+        <p class="score fade-in">Correct Answers: ${correctAnswers}</p>
+        <p class="score fade-in">Wrong Answers: ${wrongAnswers}</p>
+        <p class="score fade-in">Total Time: ${minutes}:${seconds.toString().padStart(2, '0')}</p>
+        <p class="score fade-in">Date: ${currentDate}</p>
+        <button class="next-btn fade-in" onclick="location.reload()">Try Again</button>
+        <div class="author-credit">Author: Aaron Shi. Released in November 2024.</div>
+    `;
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+document.getElementById('next').addEventListener('click', nextQuestion);
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentMode = parseInt(e.target.dataset.mode);
+        
+        // Only start quiz if both category and mode are selected
+        if (vocabulary.length > 0) {
+            currentQuestion = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            startTime = Date.now();
+            document.getElementById('correct').textContent = '0';
+            document.getElementById('wrong').textContent = '0';
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            showQuestion();
+        }
+    });
+});
+
+// Add event listener for the start button
+document.querySelector('.start-btn').addEventListener('click', () => {
+    const nameInput = document.querySelector('.name-input');
+    if (nameInput.value.trim() === '') {
+        alert('Please enter your name');
+        return;
+    }
+    
+    userName = nameInput.value.trim();
+    document.querySelector('.name-input-container').style.display = 'none';
+    document.querySelector('.quiz-sections').style.display = 'block';
+});
+</script>
+</body></html>
